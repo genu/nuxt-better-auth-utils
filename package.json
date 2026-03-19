@@ -1,38 +1,46 @@
 {
-  "name": "nuxt-better-auth",
+  "name": "@genu/nuxt-better-auth",
   "version": "0.1.0",
   "description": "Nuxt module for Better Auth — full lifecycle integration with auto-wired handler, SSR, session state, and typed server/client APIs",
   "license": "MIT",
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+  "main": "./dist/module.mjs",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/types.d.mts"
+      ]
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.mts",
+      "import": "./dist/module.mjs"
+    }
+  },
   "files": ["dist"],
+  "packageManager": "pnpm@10.8.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "prepack": "nuxt-module-build build",
-    "dev": "nuxi dev playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxi prepare playground",
-    "build": "nuxt-module-build build",
+    "dev": "pnpm dev:prepare && nuxi dev playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.16.0"
+    "@nuxt/kit": "4.3.1"
   },
   "peerDependencies": {
     "better-auth": "^1.4.0"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "^0.8.0",
-    "@nuxt/schema": "^3.16.0",
-    "better-auth": "^1.4.0",
-    "nuxt": "^3.16.0",
-    "typescript": "^5.7.0"
+    "@nuxt/module-builder": "1.0.2",
+    "@nuxt/schema": "4.3.1",
+    "better-auth": "1.5.5",
+    "nuxt": "4.3.1",
+    "typescript": "5.9.3"
   }
 }

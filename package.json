@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-better-auth",
+  "name": "@genu/nuxt-better-auth",
   "version": "0.1.0",
   "description": "Nuxt module for Better Auth — full lifecycle integration with auto-wired handler, SSR, session state, and typed server/client APIs",
   "license": "MIT",
@@ -14,6 +14,10 @@
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
   "files": ["dist"],
+  "packageManager": "pnpm@10.8.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "prepack": "nuxt-module-build build",
     "dev": "nuxi dev playground",
@@ -23,16 +27,16 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.16.0"
+    "@nuxt/kit": "3.21.2"
   },
   "peerDependencies": {
     "better-auth": "^1.4.0"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "^0.8.0",
-    "@nuxt/schema": "^3.16.0",
-    "better-auth": "^1.4.0",
-    "nuxt": "^3.16.0",
-    "typescript": "^5.7.0"
+    "@nuxt/module-builder": "0.8.4",
+    "@nuxt/schema": "3.21.2",
+    "better-auth": "1.5.5",
+    "nuxt": "3.21.2",
+    "typescript": "5.9.3"
   }
 }

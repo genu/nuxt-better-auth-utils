@@ -1,0 +1,24 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "rangeStrategy": "pin",
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group Nuxt packages together",
+      "matchPackageNames": ["nuxt", "@nuxt/**"],
+      "groupName": "nuxt"
+    },
+    {
+      "description": "Keep peer dependency range for better-auth",
+      "matchPackageNames": ["better-auth"],
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen"
+    },
+    {
+      "description": "Automerge minor and patch updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    }
+  ]
+}

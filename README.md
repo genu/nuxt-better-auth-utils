@@ -1,4 +1,4 @@
-# nuxt-better-auth
+# nuxt-better-auth-utils
 
 Nuxt module for [Better Auth](https://www.better-auth.com/) — full lifecycle integration with auto-wired handler, SSR, session state, and typed server/client APIs.
 
@@ -16,14 +16,14 @@ Nuxt module for [Better Auth](https://www.better-auth.com/) — full lifecycle i
 ## Setup
 
 ```bash
-npx nuxi module add nuxt-better-auth
+npx nuxi module add nuxt-better-auth-utils
 ```
 
 Add to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
-  modules: ['nuxt-better-auth'],
+  modules: ['nuxt-better-auth-utils'],
 })
 ```
 
@@ -36,7 +36,7 @@ Set `BETTER_AUTH_SECRET` in your `.env` (or `NUXT_SECRET`).
 Standard Better Auth options. The module auto-injects `secret`.
 
 ```ts
-import { defineAuthConfig } from '#better-auth'
+import { defineAuthConfig } from '#better-auth-utils'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
 
@@ -61,7 +61,7 @@ export default defineAuthConfig(() => {
 ### Client Config — `auth.client.config.ts`
 
 ```ts
-import { defineAuthClientConfig } from '#better-auth'
+import { defineAuthClientConfig } from '#better-auth-utils'
 import { organizationClient } from 'better-auth/client/plugins'
 
 export default defineAuthClientConfig({
@@ -76,7 +76,7 @@ Both files are optional. If absent, the module uses bare defaults.
 ```ts
 // nuxt.config.ts
 export default defineNuxtConfig({
-  betterAuth: {
+  betterAuthUtils: {
     configPath: '~~/',           // where to find config files
     redirectTo: '/auth/sign-in', // auth middleware redirect
     handlerRoute: '/api/auth/**', // API handler route
@@ -137,7 +137,7 @@ definePageMeta({
 Use Better Auth's `customSession` plugin with the `satisfies` pattern for full type inference:
 
 ```ts
-import { defineAuthConfig } from '#better-auth'
+import { defineAuthConfig } from '#better-auth-utils'
 import type { BetterAuthOptions } from 'better-auth'
 import { customSession, organization } from 'better-auth/plugins'
 

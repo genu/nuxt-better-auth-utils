@@ -19,6 +19,11 @@
             "matchPackageNames": ["/^better-auth/"]
         },
         {
+            "description": "Group linting tools",
+            "groupName": "linting",
+            "matchPackageNames": ["/^eslint/", "/^prettier/"]
+        },
+        {
             "description": "Automerge minor/patch devDependencies",
             "matchDepTypes": ["devDependencies"],
             "matchUpdateTypes": ["minor", "patch"],

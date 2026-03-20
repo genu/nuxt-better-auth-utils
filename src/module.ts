@@ -68,7 +68,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     // --- SSR Plugin ---
     addPlugin({
-      src: resolve("./runtime/plugins/auth.server.ts"),
+      src: resolve("./runtime/plugins/auth.server"),
       mode: "server",
     })
 

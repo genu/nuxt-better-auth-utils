@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.2...v0.1.3) (2026-03-20)
+
+
+### Bug Fixes
+
+* remove .ts extension from addPlugin path for consistency ([#9](https://github.com/genu/nuxt-better-auth-utils/issues/9)) ([827d912](https://github.com/genu/nuxt-better-auth-utils/commit/827d91295c1c9e73a530ff21a90043455c5adde2))
+
 ## [0.1.2](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.1...v0.1.2) (2026-03-20)
 
 

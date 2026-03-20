@@ -6,6 +6,7 @@ import {
   addServerImports,
   addPlugin,
   addRouteMiddleware,
+  addComponent,
   createResolver,
 } from "@nuxt/kit"
 import { existsSync } from "node:fs"
@@ -82,6 +83,17 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
     addRouteMiddleware({
       name: "auth",
       path: join(buildDir, "better-auth-utils/middleware/auth"),
+    })
+
+    // --- Components: AuthOnly, GuestOnly ---
+    addComponent({
+      name: "AuthOnly",
+      filePath: resolve("./runtime/components/AuthOnly.vue"),
+    })
+
+    addComponent({
+      name: "GuestOnly",
+      filePath: resolve("./runtime/components/GuestOnly.vue"),
     })
 
     // --- Alias for user config imports ---

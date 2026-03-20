@@ -2,6 +2,10 @@
   "name": "nuxt-better-auth-utils",
   "version": "0.1.1",
   "description": "Nuxt module for Better Auth — full lifecycle integration with auto-wired handler, SSR, session state, and typed server/client APIs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/genu/nuxt-better-auth-utils"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/module.mjs",

@@ -18,7 +18,9 @@
       "import": "./dist/module.mjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "packageManager": "pnpm@10.8.1",
   "publishConfig": {
     "access": "public"
@@ -27,6 +29,8 @@
     "prepack": "nuxt-module-build build",
     "dev": "pnpm dev:prepare && nuxi dev playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -39,8 +43,11 @@
   "devDependencies": {
     "@nuxt/module-builder": "1.0.2",
     "@nuxt/schema": "4.3.1",
+    "@nuxt/test-utils": "4.0.0",
     "better-auth": "1.5.5",
+    "happy-dom": "20.8.4",
     "nuxt": "4.3.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "4.1.0"
   }
 }

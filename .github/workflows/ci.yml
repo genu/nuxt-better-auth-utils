@@ -27,5 +27,8 @@ jobs:
             - name: Prepare
               run: pnpm dev:prepare
 
+            - name: Test
+              run: pnpm test
+
             - name: Build
               run: pnpm prepack

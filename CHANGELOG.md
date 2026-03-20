@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.1...v0.1.2) (2026-03-20)
+
+
+### Bug Fixes
+
+* add repository url to package.json for npm provenance verification ([#7](https://github.com/genu/nuxt-better-auth-utils/issues/7)) ([27532ad](https://github.com/genu/nuxt-better-auth-utils/commit/27532ad04d8841efd0f14e7ee7c9fa2b3b229b7b))
+
 ## [0.1.1](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.0...v0.1.1) (2026-03-20)
 
 

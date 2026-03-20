@@ -14,8 +14,8 @@ import type { BetterAuthModuleOptions } from "./types"
 
 export default defineNuxtModule<BetterAuthModuleOptions>({
   meta: {
-    name: "better-auth",
-    configKey: "betterAuth",
+    name: "better-auth-utils",
+    configKey: "betterAuthUtils",
   },
   defaults: {
     configPath: "~~/",
@@ -36,7 +36,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     // Build dir paths for generated files
     const buildDir = nuxt.options.buildDir
-    const serverAuthPath = join(buildDir, "better-auth/server/utils/auth")
+    const serverAuthPath = join(buildDir, "better-auth-utils/server/utils/auth")
 
     // --- Server: catch-all API handler ---
     addServerHandler({
@@ -46,7 +46,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     // --- Server: useServerAuth() utility ---
     addTemplate({
-      filename: "better-auth/server/utils/auth.ts",
+      filename: "better-auth-utils/server/utils/auth.ts",
       write: true,
       getContents: () => generateServerAuth(serverConfigAlias, hasServerConfig),
     })
@@ -58,12 +58,12 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     // --- Client: useAuth() composable ---
     addTemplate({
-      filename: "better-auth/composables/useAuth.ts",
+      filename: "better-auth-utils/composables/useAuth.ts",
       write: true,
       getContents: () => generateUseAuth(clientConfigAlias, hasClientConfig),
     })
 
-    addImports([{ name: "useAuth", from: join(buildDir, "better-auth/composables/useAuth") }])
+    addImports([{ name: "useAuth", from: join(buildDir, "better-auth-utils/composables/useAuth") }])
 
     // --- SSR Plugin ---
     addPlugin({
@@ -73,18 +73,18 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     // --- Route Middleware ---
     addTemplate({
-      filename: "better-auth/middleware/auth.ts",
+      filename: "better-auth-utils/middleware/auth.ts",
       write: true,
       getContents: () => generateAuthMiddleware(options.redirectTo!),
     })
 
     addRouteMiddleware({
       name: "auth",
-      path: join(buildDir, "better-auth/middleware/auth"),
+      path: join(buildDir, "better-auth-utils/middleware/auth"),
     })
 
     // --- Alias for user config imports ---
-    nuxt.options.alias["#better-auth"] = resolve("./types")
+    nuxt.options.alias["#better-auth-utils"] = resolve("./types")
   },
 })
 
@@ -154,7 +154,7 @@ function generateUseAuth(clientConfigAlias: string, hasClientConfig: boolean): s
 
   return `import { createAuthClient } from "better-auth/client"
 import { customSessionClient } from "better-auth/client/plugins"
-import type { AuthInstance } from "#build/better-auth/server/utils/auth"
+import type { AuthInstance } from "#build/better-auth-utils/server/utils/auth"
 ${hasClientConfig ? `import clientConfig from "${clientConfigAlias}"` : ""}
 
 export const useAuth = () => {

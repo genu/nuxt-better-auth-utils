@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.3...v0.1.4) (2026-03-20)
+
+
+### Features
+
+* add AuthOnly and GuestOnly components with ready state ([#11](https://github.com/genu/nuxt-better-auth-utils/issues/11)) ([d38d4e8](https://github.com/genu/nuxt-better-auth-utils/commit/d38d4e893b02817bbf3e764c1ef03d0cadbc3eeb))
+
 ## [0.1.3](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.2...v0.1.3) (2026-03-20)
 
 

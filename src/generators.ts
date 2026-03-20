@@ -96,20 +96,25 @@ export const useAuth = () => {
   const session = useState<Session | null>("auth:session", () => null)
   const user = useState<User | null>("auth:user", () => null)
   const loggedIn = computed(() => !!session.value)
+  const ready = useState<boolean>("auth:ready", () => false)
 
   const fetch = async () => {
-    const { data: sessionData } = await client.getSession({
-      fetchOptions: {
-        headers,
-      },
-    })
+    try {
+      const { data: sessionData } = await client.getSession({
+        fetchOptions: {
+          headers,
+        },
+      })
 
-    if (!sessionData) return null
+      if (!sessionData) return null
 
-    session.value = sessionData.session || null
-    user.value = sessionData.user || null
+      session.value = sessionData.session || null
+      user.value = sessionData.user || null
 
-    return sessionData
+      return sessionData
+    } finally {
+      ready.value = true
+    }
   }
 
   const signOut = async ({ redirectTo }: { redirectTo?: Parameters<typeof navigateTo>[0] } = {}) => {
@@ -132,6 +137,7 @@ export const useAuth = () => {
     session,
     user,
     loggedIn,
+    ready,
     fetch,
     signOut,
     client,

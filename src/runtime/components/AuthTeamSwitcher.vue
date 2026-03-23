@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import { useAuth } from "#imports"
+import { ref, onMounted, useAuth } from "#imports"
 
 const { client } = useAuth()
 
 const organizations = ref<unknown[]>([])
 const activeOrganization = ref<unknown | null>(null)
 const loading = ref(true)
-const ready = ref(false)
 
 const hasOrgPlugin = !!(client as Record<string, unknown>).organization
 
 async function fetchOrganizations() {
-  if (!hasOrgPlugin) return
+  if (!hasOrgPlugin) {
+    loading.value = false
+    return
+  }
 
   loading.value = true
   try {
@@ -29,7 +30,6 @@ async function fetchOrganizations() {
     throw err
   } finally {
     loading.value = false
-    ready.value = true
   }
 }
 
@@ -59,7 +59,7 @@ onMounted(() => {
 
 <template>
   <slot v-if="!hasOrgPlugin" name="empty" />
-  <slot v-else-if="loading && !ready" name="loading" />
+  <slot v-else-if="loading" name="loading" />
   <slot
     v-else-if="organizations.length > 0"
     :organizations="organizations"

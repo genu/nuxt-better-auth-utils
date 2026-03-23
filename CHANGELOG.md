@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.5...v0.1.6) (2026-03-23)
+
+
+### Bug Fixes
+
+* use addTypeTemplate for #better-auth-utils typecheck resolution ([#17](https://github.com/genu/nuxt-better-auth-utils/issues/17)) ([c09f06f](https://github.com/genu/nuxt-better-auth-utils/commit/c09f06f34580a1f14d3aad1818def5651666c80b)), closes [#16](https://github.com/genu/nuxt-better-auth-utils/issues/16)
+
 ## [0.1.5](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.4...v0.1.5) (2026-03-23)
 
 

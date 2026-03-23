@@ -1,6 +1,6 @@
 {
   "name": "nuxt-better-auth-utils",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Nuxt module for Better Auth — full lifecycle integration with auto-wired handler, SSR, session state, and typed server/client APIs",
   "repository": {
     "type": "git",

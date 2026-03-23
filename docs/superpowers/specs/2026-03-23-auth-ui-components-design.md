@@ -2,75 +2,51 @@
 
 ## Overview
 
-Enhance `nuxt-better-auth-utils` with headless renderless components and composables for common auth UI patterns. Components expose logic and state via slots, leaving all rendering/styling to the consumer.
+Enhance `nuxt-better-auth-utils` with headless renderless components for common auth UI patterns. Components expose logic and state via slots, leaving all rendering/styling to the consumer.
 
 ## Scope
 
-Two new composables and two new renderless components:
+Two new renderless components:
 
-- `useAuthOrganization()` composable (new)
 - `AuthUserButton` component (new)
 - `AuthTeamSwitcher` component (new)
-- Extended SSR plugin for org data pre-fetching
 
-Out of scope: `AuthSignIn`, `AuthSignUp` (Better Auth client already provides simple one-liner methods), `AuthSessionList` (deferred).
+No new composables — components use `useAuth()` and `useAuth().client.organization` directly.
+
+No SSR plugin changes — org data is fetched client-side on mount. Session pre-fetching remains as-is.
+
+Out of scope: `AuthSignIn`, `AuthSignUp` (Better Auth client already provides simple one-liner methods), `AuthSessionList` (deferred), per-plugin composables (users access `useAuth().client.<plugin>` directly).
 
 ## Architecture
 
 ### Data Flow
 
-1. **SSR plugin** (`auth.server.ts`) — pre-fetches session + org data (when org plugin detected) before middleware runs
-2. **Middleware** — accesses both session and org state immediately, no async needed
-3. **Composables** (`useAuth()`, `useAuthOrganization()`) — read from hydrated state
-4. **Components** — thin slot wrappers over composables
+1. **SSR plugin** (`auth.server.ts`) — pre-fetches session (existing, unchanged)
+2. **`AuthUserButton`** — wraps `useAuth()`, exposes user/session/signOut via slots
+3. **`AuthTeamSwitcher`** — uses `useAuth().client.organization` to fetch and manage org data client-side, exposes via slots
 
 ### File Structure
 
 ```
 src/runtime/
-  composables/
-    useAuth.ts              (existing, generated)
-    useAuthOrganization.ts  (new, generated when org plugin detected)
   components/
     AuthOnly.vue            (existing)
     GuestOnly.vue           (existing)
     AuthUserButton.vue      (new)
     AuthTeamSwitcher.vue    (new)
-  plugins/
-    auth.server.ts          (extended — also pre-fetches org data)
 ```
 
-Components are not generated — they are static runtime files. The composables and SSR plugin are generated based on plugin detection.
+Both components are static runtime files registered via `addComponent()`.
 
-## Composable API
+### Plugin Detection
 
-### `useAuthOrganization()`
+No build-time plugin detection. Type safety comes from Better Auth's own type inference:
 
-Auto-imported when the organization plugin is detected in the client config.
+- If the user configured `organizationClient()` in their auth client config, `useAuth().client.organization` is fully typed
+- If not, accessing `client.organization` produces a TypeScript error automatically
+- `AuthTeamSwitcher` checks at runtime if `client.organization` exists — if not, logs a dev warning and renders `#fallback`
 
-```ts
-const {
-  organizations,        // Ref<Organization[]> — user's org list
-  activeOrganization,   // Ref<Organization | null> — currently active
-  switchOrganization,   // (orgId: string) => Promise<void>
-  refresh,              // () => Promise<void> — re-fetch org data
-  loading,              // Ref<boolean>
-  ready,                // Ref<boolean> — initial fetch complete
-} = useAuthOrganization()
-```
-
-- On server: reads from state populated by SSR plugin
-- On client: hydrates from server state, listens for changes
-- `switchOrganization()` calls the Better Auth client method and updates local state
-- `refresh()` re-fetches from the API (useful after creating/deleting an org)
-
-### `useAuth()` — unchanged
-
-Existing composable. `AuthUserButton` uses this as-is.
-
-### Server-side: `useServerAuth()` extension
-
-When the organization plugin is configured, `useServerAuth()` gains `getActiveOrganization(event)` so server routes and middleware can access org state.
+This avoids fragile AST parsing, duplicate config, or module option flags. The user configures Better Auth once, and types flow naturally.
 
 ## Component Slot APIs
 
@@ -79,81 +55,51 @@ When the organization plugin is configured, `useServerAuth()` gains `getActiveOr
 Wraps `useAuth()`. Provides user data and sign-out action via slots.
 
 ```vue
-<AuthUserButton v-slot="{ user, session, loggedIn, signOut, ready }">
+<AuthUserButton v-slot="{ user, session, signOut, ready }">
   <!-- consumer renders their own UI -->
 </AuthUserButton>
 ```
 
 Slots:
-- `#default` — when authenticated. Props: `user`, `session`, `loggedIn`, `signOut`, `ready`
+- `#default` — when authenticated. Props: `user`, `session`, `signOut`, `ready`
 - `#loading` — while auth state resolves
 - `#fallback` — when not authenticated
 
 ### `AuthTeamSwitcher`
 
-Wraps `useAuthOrganization()`. Provides org list and switching via slots.
+Uses `useAuth().client.organization` to manage org state. Fetches org list on mount, exposes `refresh()` for re-fetching.
 
 ```vue
-<AuthTeamSwitcher v-slot="{ organizations, activeOrganization, switchOrganization, refresh, loading, ready }">
+<AuthTeamSwitcher v-slot="{ organizations, activeOrganization, switchOrganization, refresh, loading }">
   <!-- consumer renders their own dropdown/menu -->
 </AuthTeamSwitcher>
 ```
 
 Slots:
-- `#default` — when org data is available. Props: `organizations`, `activeOrganization`, `switchOrganization`, `refresh`, `loading`, `ready`
-- `#loading` — while fetching orgs
-- `#fallback` — when user has no organizations
+- `#default` — when org data is loaded and user has organizations. Props: `organizations`, `activeOrganization`, `switchOrganization`, `refresh`, `loading`
+- `#loading` — while fetching orgs on initial load
+- `#empty` — when user has no organizations (distinct from `#fallback` in `AuthOnly`)
 
-### Slot Pattern Consistency
+`switchOrganization(orgId)` throws on error, consistent with `useAuth().signOut()`.
 
-All components follow the `#default` / `#loading` / `#fallback` pattern established by `AuthOnly` and `GuestOnly`.
+### Slot Pattern
 
-## Build-time Plugin Detection
+- `AuthUserButton` follows `#default` / `#loading` / `#fallback` consistent with `AuthOnly`/`GuestOnly`
+- `AuthTeamSwitcher` uses `#default` / `#loading` / `#empty` — different from `#fallback` because "no orgs" is semantically different from "wrong auth state". `AuthTeamSwitcher` should be used inside an authenticated context (e.g., nested in `AuthOnly` or on a protected page).
 
-### How It Works
+### Runtime Guard
 
-The module already reads `auth.client.config.ts` in `generators.ts` to generate typed code. This extends that pattern:
-
-1. At build time, `generators.ts` analyzes the client config to determine which plugins are present
-2. When the `organization` plugin is detected:
-   - `useAuthOrganization()` composable is generated with full types
-   - `AuthTeamSwitcher` component gets proper slot prop types
-   - SSR plugin includes org data pre-fetching
-3. When the plugin is NOT configured:
-   - Composable and component types are generated as stubs producing TypeScript errors
-   - Runtime dev warning as safety net
-
-### Type Error (plugin missing)
+`AuthTeamSwitcher` checks for the organization plugin at runtime:
 
 ```ts
-// Generated when organization plugin is NOT configured
-type UseAuthOrganization = never & {
-  error: 'useAuthOrganization requires the organization plugin'
+const { client } = useAuth()
+if (!client.organization) {
+  if (import.meta.dev) {
+    console.warn('[nuxt-better-auth-utils] AuthTeamSwitcher requires the organization plugin to be configured.')
+  }
+  // render #empty slot
 }
 ```
-
-### Runtime Safety Net
-
-For JavaScript projects or bypassed types, components check at runtime and log a dev warning:
-
-```
-[nuxt-better-auth-utils] AuthTeamSwitcher requires the organization plugin to be configured.
-```
-
-### SSR Plugin Extension
-
-The generated `auth.server.ts` plugin conditionally fetches org data:
-
-```ts
-// Generated when org plugin detected
-const session = await getSession(event)
-if (session) {
-  const orgData = await getActiveOrganization(event)
-  // store in useState for hydration
-}
-```
-
-No runtime cost when the org plugin isn't used — this is all code-generated.
 
 ## Design Decisions
 
@@ -161,6 +107,9 @@ No runtime cost when the org plugin isn't used — this is all code-generated.
 |---|---|---|
 | Component style | Headless/renderless | Matches module philosophy, no styling opinions |
 | Auth form components | Excluded | Better Auth client already provides simple methods |
-| Plugin detection | Build-time types + runtime warning | Best DX, robust, extends existing pattern |
-| SSR data fetching | Extend existing SSR plugin | Data available in middleware, single fetch point |
-| Org composable | Fetch on mount + expose refresh | Data ready immediately, re-fetchable when needed |
+| Plugin detection | Runtime check + Better Auth's own types | No config duplication, no fragile AST parsing |
+| SSR pre-fetching for orgs | Not included | Keep simple for v1, can add later if needed |
+| Per-plugin composables | Not included | `useAuth().client.<plugin>` is already a one-liner |
+| `AuthTeamSwitcher` empty slot | `#empty` instead of `#fallback` | Different semantics from auth state fallback |
+| `loggedIn` in `AuthUserButton` default slot | Excluded | Always true when default slot renders |
+| Error handling | Throw on error | Consistent with existing `signOut()` behavior |

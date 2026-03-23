@@ -1,3 +1,5 @@
+import { defineNuxtPlugin } from "#app"
+
 export default defineNuxtPlugin({
   name: "better-auth-utils",
   enforce: "pre",

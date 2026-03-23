@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.7...v0.1.8) (2026-03-23)
+
+
+### Bug Fixes
+
+* add explicit imports to runtime files ([#22](https://github.com/genu/nuxt-better-auth-utils/issues/22)) ([5e91b37](https://github.com/genu/nuxt-better-auth-utils/commit/5e91b373b9018645ade4432a38c3d50e10360deb))
+
 ## [0.1.7](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.6...v0.1.7) (2026-03-23)
 
 

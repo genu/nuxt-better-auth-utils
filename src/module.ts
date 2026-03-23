@@ -96,6 +96,11 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
       filePath: resolve("./runtime/components/GuestOnly.vue"),
     })
 
+    addComponent({
+      name: "AuthUserButton",
+      filePath: resolve("./runtime/components/AuthUserButton.vue"),
+    })
+
     // --- Alias for user config imports ---
     addTemplate({
       filename: "better-auth-utils/types.ts",

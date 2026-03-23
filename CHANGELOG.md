@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.6...v0.1.7) (2026-03-23)
+
+
+### Bug Fixes
+
+* generate #better-auth-utils types into .nuxt/ for typecheck resolution ([#19](https://github.com/genu/nuxt-better-auth-utils/issues/19)) ([7be0b80](https://github.com/genu/nuxt-better-auth-utils/commit/7be0b80519fcf26bf6a8b526ab1ece7a21a8027a)), closes [#16](https://github.com/genu/nuxt-better-auth-utils/issues/16)
+
 ## [0.1.6](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.5...v0.1.6) (2026-03-23)
 
 

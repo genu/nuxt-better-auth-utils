@@ -2,6 +2,7 @@ import {
   defineNuxtModule,
   addServerHandler,
   addTemplate,
+  addTypeTemplate,
   addImports,
   addServerImports,
   addPlugin,
@@ -98,6 +99,20 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     // --- Alias for user config imports ---
     nuxt.options.alias["#better-auth-utils"] = resolve("./types")
+
+    addTypeTemplate({
+      filename: "better-auth-utils/types.d.ts",
+      getContents: () =>
+        [
+          `declare module "#better-auth-utils" {`,
+          `  import type { BetterAuthOptions } from "better-auth"`,
+          `  import type { BetterAuthClientOptions } from "better-auth/client"`,
+          `  export type AuthServerConfig = Omit<BetterAuthOptions, "secret">`,
+          `  export const defineAuthConfig: (config: AuthServerConfig | (() => AuthServerConfig)) => AuthServerConfig | (() => AuthServerConfig)`,
+          `  export const defineAuthClientConfig: (config: BetterAuthClientOptions) => BetterAuthClientOptions`,
+          `}`,
+        ].join("\n"),
+    })
   },
 })
 

@@ -4,7 +4,10 @@
  */
 
 export function generateServerAuth(serverConfigAlias: string, hasServerConfig: boolean): string {
-  const imports = ['import { betterAuth } from "better-auth"']
+  const imports = [
+    'import { betterAuth } from "better-auth"',
+    'import { useRuntimeConfig, createError } from "#imports"',
+  ]
 
   if (hasServerConfig) {
     imports.push(`import serverConfig from "${serverConfigAlias}"`)

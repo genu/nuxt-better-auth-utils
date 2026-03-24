@@ -65,6 +65,29 @@ describe("generateServerAuth", () => {
 
     expect(result).toContain("const { secret } = useRuntimeConfig()")
   })
+
+  it("explicitly imports useRuntimeConfig and createError from #imports", () => {
+    const result = generateServerAuth("~~/auth.server.config", false)
+
+    expect(result).toContain('import { useRuntimeConfig, createError } from "#imports"')
+  })
+
+  it("imports every Nitro utility it references", () => {
+    const result = generateServerAuth("~~/auth.server.config", false)
+
+    // Extract all import bindings from the generated code
+    const importedNames = new Set(
+      [...result.matchAll(/import\s+\{([^}]+)\}/g)]
+        .flatMap(m => m[1].split(",").map(s => s.trim()))
+    )
+
+    // Identifiers that must be imported (not locally defined)
+    const nitroUtilities = ["useRuntimeConfig", "createError"]
+
+    for (const name of nitroUtilities) {
+      expect(importedNames, `"${name}" is used but never imported`).toContain(name)
+    }
+  })
 })
 
 describe("generateServerAuthTypes", () => {

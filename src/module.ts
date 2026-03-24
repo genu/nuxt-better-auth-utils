@@ -22,16 +22,14 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
     configKey: "betterAuthUtils",
   },
   defaults: {
-    configPath: "~~/",
     redirectTo: "/auth/sign-in",
     handlerRoute: "/api/auth/**",
   },
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
-    const configDir = options.configPath!
-    const serverConfigAlias = `${configDir}auth.server.config`
-    const clientConfigAlias = `${configDir}auth.client.config`
+    const serverConfigAlias = "~~/server/auth.server.config"
+    const clientConfigAlias = "~~/app/auth.client.config"
 
     // Resolve actual file paths to check existence
     const resolveAlias = (alias: string) => alias.replace("~~/", `${nuxt.options.rootDir}/`) + ".ts"

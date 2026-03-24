@@ -28,6 +28,13 @@ function getTemplateContent(nuxt: Nuxt, filename: string): string {
   return template.getContents({ nuxt, app: {} })
 }
 
+function getServerTemplateContent(nuxt: Nuxt, filename: string): string {
+  const virtual = nuxt.options.nitro.virtual as Record<string, () => string>
+  const getContents = virtual?.[filename]
+  if (!getContents) throw new Error(`Server template "${filename}" not found`)
+  return getContents()
+}
+
 describe("module setup with defaults", () => {
   let nuxt: Nuxt
 
@@ -56,13 +63,20 @@ describe("module setup with defaults", () => {
     expect(nuxt.options.alias["#better-auth-utils"]).toContain("types")
   })
 
-  it("generates useServerAuth template without config import", () => {
-    const content = getTemplateContent(nuxt, "better-auth-utils/server/utils/auth.ts")
+  it("generates useServerAuth server template without config import", () => {
+    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
 
     expect(content).toContain("export function useServerAuth()")
-    expect(content).toContain("export type AuthInstance")
     expect(content).toContain("betterAuth({ secret })")
     expect(content).not.toContain("import serverConfig")
+  })
+
+  it("generates useServerAuth as plain JavaScript", () => {
+    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
+
+    expect(content).not.toContain("import type")
+    expect(content).not.toContain("export type")
+    expect(content).not.toContain(": H3Event")
   })
 
   it("generates useAuth composable template without config import", () => {
@@ -95,14 +109,18 @@ describe("module setup with defaults", () => {
     expect(component).toBeDefined()
   })
 
-  it("registers all three better-auth templates", () => {
+  it("registers client-side templates", () => {
     const templates = (nuxt.options.build.templates as Array<{ filename: string }>)
       .filter((t) => t.filename?.startsWith("better-auth-utils/"))
       .map((t) => t.filename)
 
-    expect(templates).toContain("better-auth-utils/server/utils/auth.ts")
     expect(templates).toContain("better-auth-utils/composables/useAuth.ts")
     expect(templates).toContain("better-auth-utils/middleware/auth.ts")
+  })
+
+  it("registers server auth as a nitro virtual module", () => {
+    const virtual = nuxt.options.nitro.virtual as Record<string, unknown>
+    expect(virtual?.["#better-auth-utils/server/auth"]).toBeDefined()
   })
 })
 
@@ -148,14 +166,14 @@ describe("module setup with config files", () => {
   }, 30_000)
 
   it("imports server config when auth.server.config.ts exists", () => {
-    const content = getTemplateContent(nuxt, "better-auth-utils/server/utils/auth.ts")
+    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
 
     expect(content).toContain("import serverConfig")
     expect(content).toContain("betterAuth({ ...resolved, secret })")
   })
 
   it("supports factory function pattern in generated server config", () => {
-    const content = getTemplateContent(nuxt, "better-auth-utils/server/utils/auth.ts")
+    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
 
     expect(content).toContain('typeof serverConfig === "function" ? serverConfig() : serverConfig')
   })

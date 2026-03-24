@@ -4,7 +4,7 @@
  */
 
 export function generateServerAuth(serverConfigAlias: string, hasServerConfig: boolean): string {
-  const imports = ['import type { H3Event } from "h3"', 'import { betterAuth } from "better-auth"']
+  const imports = ['import { betterAuth } from "better-auth"']
 
   if (hasServerConfig) {
     imports.push(`import serverConfig from "${serverConfigAlias}"`)
@@ -26,9 +26,7 @@ export function generateServerAuth(serverConfigAlias: string, hasServerConfig: b
     createBody,
     "}",
     "",
-    "export type AuthInstance = ReturnType<typeof createBetterAuthInstance>",
-    "",
-    "let _instance: AuthInstance | null = null",
+    "let _instance = null",
     "",
     "function getInstance() {",
     "  if (!_instance) _instance = createBetterAuthInstance()",
@@ -36,7 +34,7 @@ export function generateServerAuth(serverConfigAlias: string, hasServerConfig: b
     "}",
     "",
     "export function useServerAuth() {",
-    "  const requireSession = async (event: H3Event) => {",
+    "  const requireSession = async (event) => {",
     "    const session = await getInstance().api.getSession({ headers: event.headers })",
     "",
     "    if (!session) {",
@@ -49,7 +47,7 @@ export function generateServerAuth(serverConfigAlias: string, hasServerConfig: b
     "    return session",
     "  }",
     "",
-    "  const getSession = async (event: H3Event) => {",
+    "  const getSession = async (event) => {",
     "    return await getInstance().api.getSession({ headers: event.headers })",
     "  }",
     "",
@@ -62,12 +60,31 @@ export function generateServerAuth(serverConfigAlias: string, hasServerConfig: b
   ].join("\n")
 }
 
+export function generateServerAuthTypes(): string {
+  return [
+    'import type { H3Event } from "h3"',
+    'import type { betterAuth } from "better-auth"',
+    "",
+    "type AuthInstance = ReturnType<typeof betterAuth>",
+    "",
+    'declare module "#better-auth-utils/server/auth" {',
+    "  export type AuthInstance = ReturnType<typeof betterAuth>",
+    "",
+    "  export function useServerAuth(): {",
+    "    auth: AuthInstance",
+    "    requireSession: (event: H3Event) => Promise<NonNullable<Awaited<ReturnType<AuthInstance['api']['getSession']>>>>",
+    "    getSession: (event: H3Event) => Promise<Awaited<ReturnType<AuthInstance['api']['getSession']>>>",
+    "  }",
+    "}",
+  ].join("\n")
+}
+
 export function generateUseAuth(clientConfigAlias: string, hasClientConfig: boolean): string {
   const configRef = hasClientConfig ? "clientConfig" : "{}"
 
   return `import { createAuthClient } from "better-auth/client"
 import { customSessionClient } from "better-auth/client/plugins"
-import type { AuthInstance } from "#build/better-auth-utils/server/utils/auth"
+import type { AuthInstance } from "#better-auth-utils/server/auth"
 ${hasClientConfig ? `import clientConfig from "${clientConfigAlias}"` : ""}
 
 export const useAuth = () => {

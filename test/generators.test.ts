@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest"
-import { generateServerAuth, generateUseAuth, generateAuthMiddleware } from "../src/generators"
+import { generateServerAuth, generateServerAuthTypes, generateUseAuth, generateAuthMiddleware } from "../src/generators"
 
 describe("generateServerAuth", () => {
   it("generates minimal config when no server config exists", () => {
     const result = generateServerAuth("~~/auth.server.config", false)
 
     expect(result).toContain('import { betterAuth } from "better-auth"')
-    expect(result).toContain('import type { H3Event } from "h3"')
     expect(result).not.toContain("import serverConfig")
     expect(result).toContain("return betterAuth({ secret })")
     expect(result).toContain("export function useServerAuth()")
@@ -29,7 +28,7 @@ describe("generateServerAuth", () => {
   it("generates singleton instance pattern", () => {
     const result = generateServerAuth("~~/auth.server.config", false)
 
-    expect(result).toContain("let _instance: AuthInstance | null = null")
+    expect(result).toContain("let _instance = null")
     expect(result).toContain("function getInstance()")
     expect(result).toContain("if (!_instance) _instance = createBetterAuthInstance()")
   })
@@ -37,7 +36,7 @@ describe("generateServerAuth", () => {
   it("generates requireSession that throws 401", () => {
     const result = generateServerAuth("~~/auth.server.config", false)
 
-    expect(result).toContain("const requireSession = async (event: H3Event)")
+    expect(result).toContain("const requireSession = async (event)")
     expect(result).toContain("statusCode: 401")
     expect(result).toContain('statusMessage: "Unauthorized"')
   })
@@ -45,17 +44,20 @@ describe("generateServerAuth", () => {
   it("generates getSession without throwing", () => {
     const result = generateServerAuth("~~/auth.server.config", false)
 
-    expect(result).toContain("const getSession = async (event: H3Event)")
+    expect(result).toContain("const getSession = async (event)")
     // getSession should return the result, not throw
     const getSessionBlock = result.slice(result.indexOf("const getSession"))
     const returnBlock = getSessionBlock.slice(0, getSessionBlock.indexOf("return {"))
     expect(returnBlock).not.toContain("throw")
   })
 
-  it("exports AuthInstance type", () => {
+  it("emits plain JavaScript without TypeScript syntax", () => {
     const result = generateServerAuth("~~/auth.server.config", false)
 
-    expect(result).toContain("export type AuthInstance = ReturnType<typeof createBetterAuthInstance>")
+    expect(result).not.toContain("import type")
+    expect(result).not.toContain("export type")
+    expect(result).not.toContain(": H3Event")
+    expect(result).not.toContain(": AuthInstance")
   })
 
   it("reads secret from runtime config", () => {
@@ -65,13 +67,25 @@ describe("generateServerAuth", () => {
   })
 })
 
+describe("generateServerAuthTypes", () => {
+  it("generates type declarations for the server auth module", () => {
+    const result = generateServerAuthTypes()
+
+    expect(result).toContain('import type { H3Event } from "h3"')
+    expect(result).toContain('import type { betterAuth } from "better-auth"')
+    expect(result).toContain('declare module "#better-auth-utils/server/auth"')
+    expect(result).toContain("export type AuthInstance")
+    expect(result).toContain("export function useServerAuth()")
+  })
+})
+
 describe("generateUseAuth", () => {
   it("generates composable without client config", () => {
     const result = generateUseAuth("~~/auth.client.config", false)
 
     expect(result).toContain('import { createAuthClient } from "better-auth/client"')
     expect(result).toContain('import { customSessionClient } from "better-auth/client/plugins"')
-    expect(result).toContain('import type { AuthInstance } from "#build/better-auth-utils/server/utils/auth"')
+    expect(result).toContain('import type { AuthInstance } from "#better-auth-utils/server/auth"')
     expect(result).not.toContain("import clientConfig")
     expect(result).toContain("export const useAuth = ()")
   })

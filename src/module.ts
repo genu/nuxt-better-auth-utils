@@ -1,18 +1,20 @@
 import {
   defineNuxtModule,
   addServerHandler,
+  addServerTemplate,
   addTemplate,
   addImports,
   addServerImports,
   addPlugin,
   addRouteMiddleware,
   addComponent,
+  addTypeTemplate,
   createResolver,
 } from "@nuxt/kit"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type { BetterAuthModuleOptions } from "./types"
-import { generateServerAuth, generateUseAuth, generateAuthMiddleware } from "./generators"
+import { generateServerAuth, generateServerAuthTypes, generateUseAuth, generateAuthMiddleware } from "./generators"
 
 export default defineNuxtModule<BetterAuthModuleOptions>({
   meta: {
@@ -38,7 +40,6 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     // Build dir paths for generated files
     const buildDir = nuxt.options.buildDir
-    const serverAuthPath = join(buildDir, "better-auth-utils/server/utils/auth")
 
     // --- Server: catch-all API handler ---
     addServerHandler({
@@ -46,16 +47,25 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
       handler: resolve("./runtime/server/handler"),
     })
 
-    // --- Server: useServerAuth() utility ---
-    addTemplate({
-      filename: "better-auth-utils/server/utils/auth.ts",
-      write: true,
+    // --- Server: useServerAuth() utility (plain JS for Nitro/Rollup) ---
+    const serverAuthVirtualId = "#better-auth-utils/server/auth"
+
+    addServerTemplate({
+      filename: serverAuthVirtualId,
       getContents: () => generateServerAuth(serverConfigAlias, hasServerConfig),
     })
 
+    addTypeTemplate(
+      {
+        filename: "better-auth-utils/server/auth.d.ts",
+        getContents: () => generateServerAuthTypes(),
+      },
+      { nitro: true },
+    )
+
     addServerImports([
-      { name: "useServerAuth", from: serverAuthPath },
-      { name: "AuthInstance", type: true, from: serverAuthPath },
+      { name: "useServerAuth", from: serverAuthVirtualId },
+      { name: "AuthInstance", type: true, from: serverAuthVirtualId },
     ])
 
     // --- Client: useAuth() composable ---
@@ -107,21 +117,6 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
     })
 
     // --- Alias for user config imports ---
-    addTemplate({
-      filename: "better-auth-utils/types.ts",
-      write: true,
-      getContents: () =>
-        [
-          `import type { BetterAuthOptions } from "better-auth"`,
-          `import type { BetterAuthClientOptions } from "better-auth/client"`,
-          ``,
-          `export type AuthServerConfig = Omit<BetterAuthOptions, "secret">`,
-          `export const defineAuthConfig = (config: AuthServerConfig | (() => AuthServerConfig)) => config`,
-          `export const defineAuthClientConfig = (config: BetterAuthClientOptions) => config`,
-        ].join("\n"),
-    })
-
-    nuxt.options.alias["#better-auth-utils"] = join(buildDir, "better-auth-utils/types")
+    nuxt.options.alias["#better-auth-utils"] = resolve("./runtime/types")
   },
 })
-

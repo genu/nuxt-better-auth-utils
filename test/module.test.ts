@@ -81,6 +81,20 @@ describe("module setup with defaults", () => {
     expect(content).toContain('navigateTo("/auth/sign-in")')
   })
 
+  it("registers AuthUserButton component", async () => {
+    const collected: Array<{ pascalName?: string }> = []
+    await nuxt.callHook("components:extend", collected as never)
+    const component = collected.find((c) => c.pascalName === "AuthUserButton")
+    expect(component).toBeDefined()
+  })
+
+  it("registers AuthTeamSwitcher component", async () => {
+    const collected: Array<{ pascalName?: string }> = []
+    await nuxt.callHook("components:extend", collected as never)
+    const component = collected.find((c) => c.pascalName === "AuthTeamSwitcher")
+    expect(component).toBeDefined()
+  })
+
   it("registers all three better-auth templates", () => {
     const templates = (nuxt.options.build.templates as Array<{ filename: string }>)
       .filter((t) => t.filename?.startsWith("better-auth-utils/"))

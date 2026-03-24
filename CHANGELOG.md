@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.10...v0.1.11) (2026-03-24)
+
+
+### Bug Fixes
+
+* add explicit imports for useRuntimeConfig and createError in generated server auth ([#30](https://github.com/genu/nuxt-better-auth-utils/issues/30)) ([b821e22](https://github.com/genu/nuxt-better-auth-utils/commit/b821e22963e07c5982a285e153e96b978a054e82)), closes [#29](https://github.com/genu/nuxt-better-auth-utils/issues/29)
+
 ## [0.1.10](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.9...v0.1.10) (2026-03-24)
 
 

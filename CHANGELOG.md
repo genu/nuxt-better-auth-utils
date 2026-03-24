@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.8...v0.1.9) (2026-03-24)
+
+
+### Features
+
+* add AuthUserButton and AuthTeamSwitcher renderless components ([#24](https://github.com/genu/nuxt-better-auth-utils/issues/24)) ([13c3134](https://github.com/genu/nuxt-better-auth-utils/commit/13c313477d2aed0e95cdeeca599497a1d68c2afa))
+
 ## [0.1.8](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.7...v0.1.8) (2026-03-23)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.9...v0.1.10) (2026-03-24)
+
+
+### Bug Fixes
+
+* use addServerTemplate for Nitro-compatible server auth generation ([#27](https://github.com/genu/nuxt-better-auth-utils/issues/27)) ([1a2650b](https://github.com/genu/nuxt-better-auth-utils/commit/1a2650b1c85e73fa306b55242ceda895eacf55d7)), closes [#26](https://github.com/genu/nuxt-better-auth-utils/issues/26)
+
 ## [0.1.9](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.8...v0.1.9) (2026-03-24)
 
 

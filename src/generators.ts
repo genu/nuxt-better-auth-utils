@@ -87,7 +87,9 @@ export function generateUseAuth(clientConfigAlias: string, hasClientConfig: bool
 
   return `import { createAuthClient } from "better-auth/client"
 import { customSessionClient } from "better-auth/client/plugins"
-import type { AuthInstance } from "#better-auth-utils/server/auth"
+import type { betterAuth } from "better-auth"
+
+type AuthInstance = ReturnType<typeof betterAuth>
 ${hasClientConfig ? `import clientConfig from "${clientConfigAlias}"` : ""}
 
 export const useAuth = () => {

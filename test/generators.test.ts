@@ -161,6 +161,7 @@ describe("generateUseAuth", () => {
 
     expect(result).toContain("if (import.meta.client)")
     expect(result).toContain('client.$store.listen("$sessionSignal"')
+    expect(result).toContain("async (signal: boolean)")
   })
 
   it("returns all expected properties", () => {

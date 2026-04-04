@@ -149,7 +149,7 @@ export const useAuth = () => {
   }
 
   if (import.meta.client) {
-    client.$store.listen("$sessionSignal", async (signal) => {
+    client.$store.listen("$sessionSignal", async (signal: boolean) => {
       if (!signal) return
       await fetch()
     })

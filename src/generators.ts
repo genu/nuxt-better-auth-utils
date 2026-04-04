@@ -132,6 +132,8 @@ export const useAuth = () => {
       user.value = sessionData.user || null
 
       return sessionData
+    } catch {
+      return null
     } finally {
       ready.value = true
     }

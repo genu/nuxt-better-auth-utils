@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.14](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.13...v0.1.14) (2026-04-04)
+
+
+### Bug Fixes
+
+* add explicit type to signal param in generated useAuth ([#42](https://github.com/genu/nuxt-better-auth-utils/issues/42)) ([6f3d67d](https://github.com/genu/nuxt-better-auth-utils/commit/6f3d67db53abae455f1865b2d269343b5c42816a)), closes [#40](https://github.com/genu/nuxt-better-auth-utils/issues/40)
+* resolve vue-tsc failure for AuthInstance type in useAuth composable ([#44](https://github.com/genu/nuxt-better-auth-utils/issues/44)) ([e4df180](https://github.com/genu/nuxt-better-auth-utils/commit/e4df18076aed6b3ea2c8c99c68ac09f07e9e082d)), closes [#41](https://github.com/genu/nuxt-better-auth-utils/issues/41)
+
 ## [0.1.13](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.12...v0.1.13) (2026-04-04)
 
 

@@ -108,7 +108,8 @@ describe("generateUseAuth", () => {
 
     expect(result).toContain('import { createAuthClient } from "better-auth/client"')
     expect(result).toContain('import { customSessionClient } from "better-auth/client/plugins"')
-    expect(result).toContain('import type { AuthInstance } from "#better-auth-utils/server/auth"')
+    expect(result).toContain('import type { betterAuth } from "better-auth"')
+    expect(result).toContain("type AuthInstance = ReturnType<typeof betterAuth>")
     expect(result).not.toContain("import clientConfig")
     expect(result).toContain("export const useAuth = ()")
   })

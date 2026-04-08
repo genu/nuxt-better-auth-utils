@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.17](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.16...v0.1.17) (2026-04-08)
+
+
+### Bug Fixes
+
+* restore session on pages with ssr: false route rules ([#51](https://github.com/genu/nuxt-better-auth-utils/issues/51)) ([d91d4ff](https://github.com/genu/nuxt-better-auth-utils/commit/d91d4ff964131255306d98d1f9e139676831aee2))
+
 ## [0.1.16](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.15...v0.1.16) (2026-04-08)
 
 

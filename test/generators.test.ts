@@ -104,7 +104,7 @@ describe("generateServerAuthTypes", () => {
 
 describe("generateUseAuth", () => {
   it("generates composable without client config", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain('import { createAuthClient } from "better-auth/client"')
     expect(result).toContain('import { customSessionClient } from "better-auth/client/plugins"')
@@ -115,26 +115,26 @@ describe("generateUseAuth", () => {
   })
 
   it("imports client config when it exists", () => {
-    const result = generateUseAuth("~~/auth.client.config", true)
+    const result = generateUseAuth("~~/auth.client.config", true, "~~/server/auth.server.config", false)
 
     expect(result).toContain('import clientConfig from "~~/auth.client.config"')
     expect(result).toContain("...((clientConfig).plugins || [])")
   })
 
   it("uses empty object for plugins when no client config", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("...(({}).plugins || [])")
   })
 
   it("uses the provided config alias path", () => {
-    const result = generateUseAuth("~/custom/auth.client.config", true)
+    const result = generateUseAuth("~/custom/auth.client.config", true, "~~/server/auth.server.config", false)
 
     expect(result).toContain('import clientConfig from "~/custom/auth.client.config"')
   })
 
   it("generates reactive session state", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain('useState<Session | null>("auth:session", () => null)')
     expect(result).toContain('useState<User | null>("auth:user", () => null)')
@@ -142,7 +142,7 @@ describe("generateUseAuth", () => {
   })
 
   it("generates fetch function that updates state", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("const fetch = async ()")
     expect(result).toContain("session.value = sessionData.session || null")
@@ -150,7 +150,7 @@ describe("generateUseAuth", () => {
   })
 
   it("generates signOut function that clears state", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("const signOut = async")
     expect(result).toContain("session.value = null")
@@ -158,7 +158,7 @@ describe("generateUseAuth", () => {
   })
 
   it("includes cross-tab session signal listener", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("if (import.meta.client)")
     expect(result).toContain('client.$store.listen("$sessionSignal"')
@@ -166,7 +166,7 @@ describe("generateUseAuth", () => {
   })
 
   it("returns all expected properties", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("return {")
     for (const prop of ["session", "user", "loggedIn", "fetch", "signOut", "client"]) {
@@ -175,29 +175,57 @@ describe("generateUseAuth", () => {
   })
 
   it("sets baseURL from request URL", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("const url = useRequestURL()")
     expect(result).toContain("baseURL: url.origin")
   })
 
   it("forwards request headers for SSR", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("const headers = useRequestHeaders()")
     expect(result).toContain("...headers,")
   })
 
   it("includes customSessionClient plugin", () => {
-    const result = generateUseAuth("~~/auth.client.config", false)
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
     expect(result).toContain("customSessionClient<AuthInstance>()")
   })
 
-  it("spreads client config options excluding plugins", () => {
-    const result = generateUseAuth("~~/auth.client.config", true)
+  it("spreads client config directly", () => {
+    const result = generateUseAuth("~~/auth.client.config", true, "~~/server/auth.server.config", false)
 
-    expect(result).toContain('Object.entries(clientConfig).filter(([key]) => key !== "plugins")')
+    expect(result).toContain("...clientConfig,")
+  })
+
+  it("uses base betterAuth type when no server config exists", () => {
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
+
+    expect(result).toContain('import type { betterAuth } from "better-auth"')
+    expect(result).toContain("type AuthInstance = ReturnType<typeof betterAuth>")
+    expect(result).not.toContain("import type serverConfig")
+  })
+
+  it("imports server config type when server config exists", () => {
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", true)
+
+    expect(result).toContain('import type serverConfig from "~~/server/auth.server.config"')
+    expect(result).not.toContain('import type { betterAuth } from "better-auth"')
+  })
+
+  it("derives AuthInstance from server config when available", () => {
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", true)
+
+    expect(result).toContain("type ResolvedServerConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig")
+    expect(result).toContain("type AuthInstance = { options: ResolvedServerConfig & { secret: string } }")
+  })
+
+  it("uses custom server config alias path", () => {
+    const result = generateUseAuth("~~/auth.client.config", false, "~/custom/auth.server.config", true)
+
+    expect(result).toContain('import type serverConfig from "~/custom/auth.server.config"')
   })
 })
 

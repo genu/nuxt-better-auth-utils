@@ -10,6 +10,6 @@ export interface BetterAuthModuleOptions {
 
 export type AuthServerConfig = Omit<BetterAuthOptions, "secret">
 
-export const defineAuthConfig = (config: AuthServerConfig | (() => AuthServerConfig)) => config
+export const defineAuthConfig = <T extends AuthServerConfig>(config: T | (() => T)) => config
 
-export const defineAuthClientConfig = (config: BetterAuthClientOptions) => config
+export const defineAuthClientConfig = <T extends BetterAuthClientOptions>(config: T) => config

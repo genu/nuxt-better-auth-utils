@@ -82,14 +82,28 @@ export function generateServerAuthTypes(): string {
   ].join("\n")
 }
 
-export function generateUseAuth(clientConfigAlias: string, hasClientConfig: boolean): string {
+export function generateUseAuth(
+  clientConfigAlias: string,
+  hasClientConfig: boolean,
+  serverConfigAlias: string,
+  hasServerConfig: boolean,
+): string {
   const configRef = hasClientConfig ? "clientConfig" : "{}"
+
+  const authInstanceType = hasServerConfig
+    ? [
+        `import type serverConfig from "${serverConfigAlias}"`,
+        `type ResolvedServerConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig`,
+        `type AuthInstance = { options: ResolvedServerConfig & { secret: string } }`,
+      ].join("\n")
+    : [
+        `import type { betterAuth } from "better-auth"`,
+        `type AuthInstance = ReturnType<typeof betterAuth>`,
+      ].join("\n")
 
   return `import { createAuthClient } from "better-auth/client"
 import { customSessionClient } from "better-auth/client/plugins"
-import type { betterAuth } from "better-auth"
-
-type AuthInstance = ReturnType<typeof betterAuth>
+${authInstanceType}
 ${hasClientConfig ? `import clientConfig from "${clientConfigAlias}"` : ""}
 
 export const useAuth = () => {
@@ -97,6 +111,7 @@ export const useAuth = () => {
   const headers = useRequestHeaders()
 
   const client = createAuthClient({
+    ...${configRef},
     baseURL: url.origin,
     fetchOptions: {
       headers: {
@@ -107,9 +122,6 @@ export const useAuth = () => {
       customSessionClient<AuthInstance>(),
       ...((${configRef}).plugins || []),
     ],
-    ...Object.fromEntries(
-      Object.entries(${configRef}).filter(([key]) => key !== "plugins"),
-    ),
   })
 
   type Session = (typeof client.$Infer.Session)["session"]

@@ -70,7 +70,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
     addTemplate({
       filename: "better-auth-utils/composables/useAuth.ts",
       write: true,
-      getContents: () => generateUseAuth(clientConfigAlias, hasClientConfig),
+      getContents: () => generateUseAuth(clientConfigAlias, hasClientConfig, serverConfigAlias, hasServerConfig),
     })
 
     addImports([{ name: "useAuth", from: join(buildDir, "better-auth-utils/composables/useAuth") }])

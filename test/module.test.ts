@@ -58,6 +58,14 @@ describe("module setup with defaults", () => {
     expect(plugin).toBeDefined()
   })
 
+  it("registers the client plugin", () => {
+    const plugin = nuxt.options.plugins.find((p) => {
+      const src = typeof p === "string" ? p : p.src
+      return src.includes("auth.client")
+    })
+    expect(plugin).toBeDefined()
+  })
+
   it("sets #better-auth-utils alias to types", () => {
     expect(nuxt.options.alias["#better-auth-utils"]).toBeDefined()
     expect(nuxt.options.alias["#better-auth-utils"]).toContain("types")

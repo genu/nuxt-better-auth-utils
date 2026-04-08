@@ -81,6 +81,12 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
       mode: "server",
     })
 
+    // --- Client Plugin (for ssr: false / prerendered pages) ---
+    addPlugin({
+      src: resolve("./runtime/plugins/auth.client"),
+      mode: "client",
+    })
+
     // --- Route Middleware ---
     addTemplate({
       filename: "better-auth-utils/middleware/auth.ts",

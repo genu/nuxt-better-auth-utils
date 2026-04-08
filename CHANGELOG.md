@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.16](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.15...v0.1.16) (2026-04-08)
+
+
+### Bug Fixes
+
+* preserve plugin and custom session types in useAuth composable ([#46](https://github.com/genu/nuxt-better-auth-utils/issues/46)) ([64fe0ca](https://github.com/genu/nuxt-better-auth-utils/commit/64fe0ca6ec17e3d7069e1ed0341ca64a735f5223)), closes [#45](https://github.com/genu/nuxt-better-auth-utils/issues/45)
+
 ## [0.1.15](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.14...v0.1.15) (2026-04-08)
 
 

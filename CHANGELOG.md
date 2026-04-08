@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.1.15](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.14...v0.1.15) (2026-04-08)
+
+
+### Features
+
+* add AuthOnly and GuestOnly components with ready state ([#11](https://github.com/genu/nuxt-better-auth-utils/issues/11)) ([d24e82c](https://github.com/genu/nuxt-better-auth-utils/commit/d24e82ca9e1144ce48f97b40d059c83e9390df49))
+* add AuthUserButton and AuthTeamSwitcher renderless components ([#24](https://github.com/genu/nuxt-better-auth-utils/issues/24)) ([b7e83ae](https://github.com/genu/nuxt-better-auth-utils/commit/b7e83ae7b5b2ad3eb34e1078d8e69e6689f45da5))
+
+
+### Bug Fixes
+
+* add explicit imports for useRuntimeConfig and createError in generated server auth ([#30](https://github.com/genu/nuxt-better-auth-utils/issues/30)) ([b7d5b1f](https://github.com/genu/nuxt-better-auth-utils/commit/b7d5b1fb45a7874a06c29e21660c1d4bd5e50228)), closes [#29](https://github.com/genu/nuxt-better-auth-utils/issues/29)
+* add explicit imports to runtime files ([#22](https://github.com/genu/nuxt-better-auth-utils/issues/22)) ([4245df9](https://github.com/genu/nuxt-better-auth-utils/commit/4245df94277b2d4c3cf1914ffe1879c1dc8ed2b8))
+* add explicit type to signal param in generated useAuth ([#42](https://github.com/genu/nuxt-better-auth-utils/issues/42)) ([aaf0c29](https://github.com/genu/nuxt-better-auth-utils/commit/aaf0c29806f7c1b052d6045ac902e7d3ce4fff81)), closes [#40](https://github.com/genu/nuxt-better-auth-utils/issues/40)
+* add repository url to package.json for npm provenance verification ([#7](https://github.com/genu/nuxt-better-auth-utils/issues/7)) ([fb47965](https://github.com/genu/nuxt-better-auth-utils/commit/fb47965da763a6b6b2ed4e786e8c17c0f49f9d56))
+* **ci:** update prepare-release workflow for PR-based flow ([#35](https://github.com/genu/nuxt-better-auth-utils/issues/35)) ([ad1f5a2](https://github.com/genu/nuxt-better-auth-utils/commit/ad1f5a2b010d821416aa7fdd13c604ea804fde0a))
+* **deps:** update dependencies ([e0b7064](https://github.com/genu/nuxt-better-auth-utils/commit/e0b70640d810f9f9e8fd1a5536a321510ff9d127))
+* **deps:** update dependencies ([48a7b07](https://github.com/genu/nuxt-better-auth-utils/commit/48a7b079939175cb6c6f2fa0d15856897a3408cf))
+* generate #better-auth-utils types into .nuxt/ for typecheck resolution ([#19](https://github.com/genu/nuxt-better-auth-utils/issues/19)) ([176d50c](https://github.com/genu/nuxt-better-auth-utils/commit/176d50c6eb336a40b47a771099b8938cf1b1f373)), closes [#16](https://github.com/genu/nuxt-better-auth-utils/issues/16)
+* include types.ts as build entry so #better-auth-utils alias works ([#14](https://github.com/genu/nuxt-better-auth-utils/issues/14)) ([d629a6d](https://github.com/genu/nuxt-better-auth-utils/commit/d629a6d401523dba78c985af7ffadc680575a77e)), closes [#13](https://github.com/genu/nuxt-better-auth-utils/issues/13)
+* move config files to scoped directories for tsconfig resolution ([#32](https://github.com/genu/nuxt-better-auth-utils/issues/32)) ([6c55da8](https://github.com/genu/nuxt-better-auth-utils/commit/6c55da806124073f71e5f840a61dbcfb831a0e05))
+* move config files to scoped directories for tsconfig resolution ([#32](https://github.com/genu/nuxt-better-auth-utils/issues/32)) ([320e9b6](https://github.com/genu/nuxt-better-auth-utils/commit/320e9b62c488580a54498092a1fc45835c3a9196))
+* prevent auth plugin crash during prerender ([#39](https://github.com/genu/nuxt-better-auth-utils/issues/39)) ([2766bb4](https://github.com/genu/nuxt-better-auth-utils/commit/2766bb43fe6f3c42a9e783edb9b9b05291b35d7a)), closes [#38](https://github.com/genu/nuxt-better-auth-utils/issues/38)
+* remove .ts extension from addPlugin path for consistency ([#9](https://github.com/genu/nuxt-better-auth-utils/issues/9)) ([43df986](https://github.com/genu/nuxt-better-auth-utils/commit/43df986b75c239d2a2080dcee29fa5824c72d3cd))
+* resolve vue-tsc failure for AuthInstance type in useAuth composable ([#44](https://github.com/genu/nuxt-better-auth-utils/issues/44)) ([318346d](https://github.com/genu/nuxt-better-auth-utils/commit/318346dee8f5165e928cec6a08068787a190c08f)), closes [#41](https://github.com/genu/nuxt-better-auth-utils/issues/41)
+* use addServerTemplate for Nitro-compatible server auth generation ([#27](https://github.com/genu/nuxt-better-auth-utils/issues/27)) ([09d379d](https://github.com/genu/nuxt-better-auth-utils/commit/09d379df21ccb473414561906ce74524e99ee742)), closes [#26](https://github.com/genu/nuxt-better-auth-utils/issues/26)
+* use addTypeTemplate for #better-auth-utils typecheck resolution ([#17](https://github.com/genu/nuxt-better-auth-utils/issues/17)) ([5b95855](https://github.com/genu/nuxt-better-auth-utils/commit/5b958558e1f92d5bbf93bd7de4a3dec7eec64432)), closes [#16](https://github.com/genu/nuxt-better-auth-utils/issues/16)
+
 ## [0.1.14](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.13...v0.1.14) (2026-04-04)
 
 

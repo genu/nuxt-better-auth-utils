@@ -134,11 +134,18 @@ export const useAuth = () => {
 
   const fetch = async () => {
     try {
-      const { data: sessionData } = await client.getSession({
-        fetchOptions: {
-          headers,
-        },
-      })
+      let sessionData: typeof client.$Infer.Session | null = null
+
+      if (import.meta.server) {
+        sessionData = await $fetch("/api/auth/get-session", { headers })
+      } else {
+        const { data } = await client.getSession({
+          fetchOptions: {
+            headers,
+          },
+        })
+        sessionData = data
+      }
 
       if (!sessionData) return null
 

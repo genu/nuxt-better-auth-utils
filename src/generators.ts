@@ -132,32 +132,41 @@ export const useAuth = () => {
   const loggedIn = computed(() => !!session.value)
   const ready = useState<boolean>("auth:ready", () => false)
 
-  const fetch = async () => {
-    try {
-      let sessionData: typeof client.$Infer.Session | null = null
+  let _fetchPromise: Promise<typeof client.$Infer.Session | null> | null = null
 
-      if (import.meta.server) {
-        sessionData = await $fetch("/api/auth/get-session", { headers })
-      } else {
-        const { data } = await client.getSession({
-          fetchOptions: {
-            headers,
-          },
-        })
-        sessionData = data
+  const fetch = () => {
+    if (_fetchPromise) return _fetchPromise
+
+    _fetchPromise = (async () => {
+      try {
+        let sessionData: typeof client.$Infer.Session | null = null
+
+        if (import.meta.server) {
+          sessionData = await $fetch("/api/auth/get-session", { headers })
+        } else {
+          const { data } = await client.getSession({
+            fetchOptions: {
+              headers,
+            },
+          })
+          sessionData = data
+        }
+
+        if (!sessionData) return null
+
+        session.value = sessionData.session || null
+        user.value = sessionData.user || null
+
+        return sessionData
+      } catch {
+        return null
+      } finally {
+        ready.value = true
+        _fetchPromise = null
       }
+    })()
 
-      if (!sessionData) return null
-
-      session.value = sessionData.session || null
-      user.value = sessionData.user || null
-
-      return sessionData
-    } catch {
-      return null
-    } finally {
-      ready.value = true
-    }
+    return _fetchPromise
   }
 
   const signOut = async ({ redirectTo }: { redirectTo?: Parameters<typeof navigateTo>[0] } = {}) => {

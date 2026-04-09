@@ -144,9 +144,17 @@ describe("generateUseAuth", () => {
   it("generates fetch function that updates state", () => {
     const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
 
-    expect(result).toContain("const fetch = async ()")
+    expect(result).toContain("const fetch = ()")
     expect(result).toContain("session.value = sessionData.session || null")
     expect(result).toContain("user.value = sessionData.user || null")
+  })
+
+  it("deduplicates concurrent fetch calls", () => {
+    const result = generateUseAuth("~~/auth.client.config", false, "~~/server/auth.server.config", false)
+
+    expect(result).toContain("let _fetchPromise")
+    expect(result).toContain("if (_fetchPromise) return _fetchPromise")
+    expect(result).toContain("_fetchPromise = null")
   })
 
   it("generates signOut function that clears state", () => {

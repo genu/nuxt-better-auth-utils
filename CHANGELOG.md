@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.18](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.17...v0.1.18) (2026-04-09)
+
+
+### Bug Fixes
+
+* use $fetch for SSR session hydration to avoid HTTP round-trip ([#56](https://github.com/genu/nuxt-better-auth-utils/issues/56)) ([82f43f4](https://github.com/genu/nuxt-better-auth-utils/commit/82f43f4c2b3932d9085b93679a9ff8b290b4f123)), closes [#55](https://github.com/genu/nuxt-better-auth-utils/issues/55)
+
 ## [0.1.17](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.16...v0.1.17) (2026-04-08)
 
 

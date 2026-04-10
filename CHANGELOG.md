@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.19](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.18...v0.1.19) (2026-04-09)
+
+
+### Bug Fixes
+
+* deduplicate concurrent fetch calls in useAuth ([#58](https://github.com/genu/nuxt-better-auth-utils/issues/58)) ([2bf3195](https://github.com/genu/nuxt-better-auth-utils/commit/2bf3195be27f495219857aa5ffc33a8dc07ea2ce))
+
 ## [0.1.18](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.17...v0.1.18) (2026-04-09)
 
 

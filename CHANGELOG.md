@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.22](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.21...v0.1.22) (2026-04-12)
+
+
+### Bug Fixes
+
+* rename config alias to avoid Nitro auto-import type collision ([#69](https://github.com/genu/nuxt-better-auth-utils/issues/69)) ([c327241](https://github.com/genu/nuxt-better-auth-utils/commit/c327241839c84342e3526c4e785b40837adabb9a)), closes [#68](https://github.com/genu/nuxt-better-auth-utils/issues/68)
+
 ## [0.1.21](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.20...v0.1.21) (2026-04-12)
 
 

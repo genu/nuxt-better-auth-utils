@@ -130,6 +130,12 @@ describe("module setup with defaults", () => {
     const virtual = nuxt.options.nitro.virtual as Record<string, unknown>
     expect(virtual?.["#better-auth-utils/server/auth"]).toBeDefined()
   })
+
+  it("sets alias for server auth virtual module to resolve types", () => {
+    const alias = nuxt.options.alias["#better-auth-utils/server/auth"]
+    expect(alias).toBeDefined()
+    expect(alias).toContain("better-auth-utils/server/auth.d.ts")
+  })
 })
 
 describe("module setup with custom options", () => {

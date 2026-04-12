@@ -61,6 +61,8 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
       { nitro: true },
     )
 
+    nuxt.options.alias[serverAuthVirtualId] = join(buildDir, "better-auth-utils/server/auth.d.ts")
+
     addServerImports([
       { name: "useServerAuth", from: serverAuthVirtualId },
       { name: "AuthInstance", type: true, from: serverAuthVirtualId },

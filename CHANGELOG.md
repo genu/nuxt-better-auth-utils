@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.20](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.19...v0.1.20) (2026-04-12)
+
+
+### Bug Fixes
+
+* infer server auth types from user config ([#62](https://github.com/genu/nuxt-better-auth-utils/issues/62)) ([1ca08ce](https://github.com/genu/nuxt-better-auth-utils/commit/1ca08cef0ab540f3447519967de63d51f3de848c))
+
 ## [0.1.19](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.18...v0.1.19) (2026-04-09)
 
 

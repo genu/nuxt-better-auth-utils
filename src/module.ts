@@ -56,7 +56,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
     addTypeTemplate(
       {
         filename: "better-auth-utils/server/auth.d.ts",
-        getContents: () => generateServerAuthTypes(),
+        getContents: () => generateServerAuthTypes(serverConfigAlias, hasServerConfig),
       },
       { nitro: true },
     )

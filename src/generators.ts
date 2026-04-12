@@ -63,15 +63,24 @@ export function generateServerAuth(serverConfigAlias: string, hasServerConfig: b
   ].join("\n")
 }
 
-export function generateServerAuthTypes(): string {
+export function generateServerAuthTypes(serverConfigAlias: string, hasServerConfig: boolean): string {
+  const authInstanceType = hasServerConfig
+    ? [
+        `import type serverConfig from "${serverConfigAlias}"`,
+        `type ResolvedServerConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig`,
+        `type AuthInstance = { options: ResolvedServerConfig & { secret: string } }`,
+      ].join("\n")
+    : [
+        'import type { betterAuth } from "better-auth"',
+        "type AuthInstance = ReturnType<typeof betterAuth>",
+      ].join("\n")
+
   return [
     'import type { H3Event } from "h3"',
-    'import type { betterAuth } from "better-auth"',
-    "",
-    "type AuthInstance = ReturnType<typeof betterAuth>",
+    authInstanceType,
     "",
     'declare module "#better-auth-utils/server/auth" {',
-    "  export type AuthInstance = ReturnType<typeof betterAuth>",
+    "  export type { AuthInstance }",
     "",
     "  export function useServerAuth(): {",
     "    auth: AuthInstance",

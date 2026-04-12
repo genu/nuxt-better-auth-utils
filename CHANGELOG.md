@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.23](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.22...v0.1.23) (2026-04-12)
+
+
+### Bug Fixes
+
+* add alias for server auth virtual module to resolve types in Nitro tsconfig ([#73](https://github.com/genu/nuxt-better-auth-utils/issues/73)) ([e062dd8](https://github.com/genu/nuxt-better-auth-utils/commit/e062dd80e62989e516f5b6bf4d7fa53b97e59c1a)), closes [#71](https://github.com/genu/nuxt-better-auth-utils/issues/71)
+
 ## [0.1.22](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.21...v0.1.22) (2026-04-12)
 
 

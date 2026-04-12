@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.21](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.20...v0.1.21) (2026-04-12)
+
+
+### Bug Fixes
+
+* use $Infer.Session for server auth types to avoid depth limit ([#66](https://github.com/genu/nuxt-better-auth-utils/issues/66)) ([601557f](https://github.com/genu/nuxt-better-auth-utils/commit/601557f76ef27d833aef437afc98f110c85cd717))
+
 ## [0.1.20](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.19...v0.1.20) (2026-04-12)
 
 

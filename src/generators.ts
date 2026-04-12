@@ -66,14 +66,18 @@ export function generateServerAuth(serverConfigAlias: string, hasServerConfig: b
 export function generateServerAuthTypes(serverConfigAlias: string, hasServerConfig: boolean): string {
   const authInstanceType = hasServerConfig
     ? [
-        'import type { Auth } from "better-auth"',
+        'import type { Auth, Session, User } from "better-auth"',
         `import type serverConfig from "${serverConfigAlias}"`,
         `type ResolvedServerConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig`,
         `type AuthInstance = Auth<ResolvedServerConfig & { secret: string }>`,
+        `type Plugins = NonNullable<ResolvedServerConfig["plugins"]>`,
+        `type CustomSessionPlugin = Plugins extends (infer P)[] ? P extends { id: "custom-session"; $Infer: { Session: infer S } } ? S : never : never`,
+        `type SessionData = [CustomSessionPlugin] extends [never] ? { session: Session; user: User } : CustomSessionPlugin`,
       ].join("\n")
     : [
         'import type { betterAuth } from "better-auth"',
         "type AuthInstance = ReturnType<typeof betterAuth>",
+        "type SessionData = AuthInstance['$Infer']['Session']",
       ].join("\n")
 
   return [
@@ -85,8 +89,8 @@ export function generateServerAuthTypes(serverConfigAlias: string, hasServerConf
     "",
     "  export function useServerAuth(): {",
     "    auth: AuthInstance",
-    "    requireSession: (event: H3Event) => Promise<NonNullable<AuthInstance['$Infer']['Session']>>",
-    "    getSession: (event: H3Event) => Promise<AuthInstance['$Infer']['Session'] | null>",
+    "    requireSession: (event: H3Event) => Promise<NonNullable<SessionData>>",
+    "    getSession: (event: H3Event) => Promise<SessionData | null>",
     "  }",
     "}",
   ].join("\n")

@@ -29,9 +29,9 @@ function getTemplateContent(nuxt: Nuxt, filename: string): string {
 
 function getServerTemplateContent(nuxt: Nuxt, filename: string): string {
   const virtual = nuxt.options.nitro.virtual as Record<string, () => string>
-  const getContents = virtual?.[filename]
-  if (!getContents) throw new Error(`Server template "${filename}" not found`)
-  return getContents()
+  const key = Object.keys(virtual ?? {}).find((k) => k.endsWith(filename))
+  if (!key) throw new Error(`Server template "${filename}" not found`)
+  return virtual[key]()
 }
 
 describe("module setup with defaults", () => {
@@ -127,7 +127,8 @@ describe("module setup with defaults", () => {
 
   it("registers server auth as a nitro virtual module", () => {
     const virtual = nuxt.options.nitro.virtual as Record<string, unknown>
-    expect(virtual?.["better-auth-utils/server/auth.ts"]).toBeDefined()
+    const key = Object.keys(virtual ?? {}).find((k) => k.endsWith("better-auth-utils/server/auth.ts"))
+    expect(key).toBeDefined()
   })
 })
 

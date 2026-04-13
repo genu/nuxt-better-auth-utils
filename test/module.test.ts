@@ -71,7 +71,7 @@ describe("module setup with defaults", () => {
   })
 
   it("generates useServerAuth server template without config import", () => {
-    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth")
 
     expect(content).toContain("export function useServerAuth()")
     expect(content).toContain("betterAuth({ secret })")
@@ -79,7 +79,7 @@ describe("module setup with defaults", () => {
   })
 
   it("generates server auth without TypeScript syntax", () => {
-    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth")
 
     expect(content).not.toContain("import type")
     expect(content).not.toContain("export type")
@@ -127,7 +127,7 @@ describe("module setup with defaults", () => {
 
   it("registers server auth as a nitro virtual module", () => {
     const virtual = nuxt.options.nitro.virtual as Record<string, unknown>
-    const key = Object.keys(virtual ?? {}).find((k) => k.endsWith("better-auth-utils/server/auth.ts"))
+    const key = Object.keys(virtual ?? {}).find((k) => k.endsWith("better-auth-utils/server/auth"))
     expect(key).toBeDefined()
   })
 })
@@ -174,14 +174,14 @@ describe("module setup with config files", () => {
   }, 30_000)
 
   it("imports server config when auth.server.config.ts exists", () => {
-    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth")
 
     expect(content).toContain("import serverConfig")
     expect(content).toContain("betterAuth({ ...resolved, secret })")
   })
 
   it("calls serverConfig as function in generated server config", () => {
-    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth")
 
     expect(content).toContain("const resolved = serverConfig()")
   })

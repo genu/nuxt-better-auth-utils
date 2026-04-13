@@ -12,7 +12,7 @@ importers:
         specifier: 4.3.1
         version: 4.3.1(magicast@0.5.2)
       defu:
-        specifier: ^6.1.7
+        specifier: 6.1.7
         version: 6.1.7
     devDependencies:
       '@nuxt/module-builder':

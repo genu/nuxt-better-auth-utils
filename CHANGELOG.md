@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.26](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.25...v0.1.26) (2026-04-13)
+
+
+### Bug Fixes
+
+* separate runtime JS and type declarations for Nitro compatibility ([#79](https://github.com/genu/nuxt-better-auth-utils/issues/79)) ([40b60c9](https://github.com/genu/nuxt-better-auth-utils/commit/40b60c911a837db50c9908a2e1a627b272429185))
+
 ## [0.1.25](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.24...v0.1.25) (2026-04-13)
 
 

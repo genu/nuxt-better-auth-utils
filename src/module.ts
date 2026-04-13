@@ -49,9 +49,11 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
     const serverAuthPath = join(buildDir, "better-auth-utils/server/auth")
     const getServerAuthContents = () => generateServerAuth(serverConfigAlias, hasServerConfig)
 
-    // Register as Nitro virtual module so server code can resolve it
+    // Register as Nitro virtual module. The filename must be the absolute
+    // path matching what addServerImports resolves to, so Nitro's rollup
+    // virtual plugin can match the import.
     addServerTemplate({
-      filename: "better-auth-utils/server/auth.ts",
+      filename: `${serverAuthPath}.ts`,
       getContents: getServerAuthContents,
     })
 

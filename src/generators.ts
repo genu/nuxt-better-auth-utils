@@ -22,7 +22,7 @@ export function generateServerAuth(
 
   const createBody = hasServerConfig
     ? [
-        '  const resolved = typeof serverConfig === "function" ? serverConfig() : serverConfig',
+        "  const resolved = serverConfig()",
         "  return betterAuth({ ...resolved, secret })",
       ].join("\n")
     : "  return betterAuth({ secret })";

@@ -15,7 +15,7 @@ describe("generateServerAuth", () => {
     const result = generateServerAuth("~~/auth.server.config", true)
 
     expect(result).toContain('import serverConfig from "~~/auth.server.config"')
-    expect(result).toContain('typeof serverConfig === "function" ? serverConfig() : serverConfig')
+    expect(result).toContain("const resolved = serverConfig()")
     expect(result).toContain("return betterAuth({ ...resolved, secret })")
   })
 

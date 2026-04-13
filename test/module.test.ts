@@ -177,10 +177,10 @@ describe("module setup with config files", () => {
     expect(content).toContain("betterAuth({ ...resolved, secret })")
   })
 
-  it("supports factory function pattern in generated server config", () => {
+  it("calls serverConfig as function in generated server config", () => {
     const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
 
-    expect(content).toContain('typeof serverConfig === "function" ? serverConfig() : serverConfig')
+    expect(content).toContain("const resolved = serverConfig()")
   })
 
   it("imports client config when auth.client.config.ts exists", () => {

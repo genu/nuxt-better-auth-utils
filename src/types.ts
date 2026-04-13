@@ -1,6 +1,3 @@
-import type { BetterAuthOptions } from "better-auth"
-import type { BetterAuthClientOptions } from "better-auth/client"
-
 export interface BetterAuthModuleOptions {
   /** Route path for the auth middleware redirect. @default '/auth/sign-in' */
   redirectTo?: string
@@ -8,8 +5,5 @@ export interface BetterAuthModuleOptions {
   handlerRoute?: string
 }
 
-export type AuthServerConfig = Omit<BetterAuthOptions, "secret">
-
-export const defineAuthConfig = <T extends AuthServerConfig>(config: T | (() => T)) => config
-
-export const defineAuthClientConfig = <T extends BetterAuthClientOptions>(config: T) => config
+export { defineAuthConfig, defineAuthClientConfig } from "./runtime/utils/define-config"
+export type { AuthServerConfig } from "./runtime/utils/define-config"

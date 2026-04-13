@@ -63,6 +63,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     addServerImports([
       { name: "useServerAuth", from: serverAuthPath },
+      { name: "defineAuthConfig", from: resolve("./runtime/utils/define-config") },
     ])
 
     // --- Client: useAuth() composable ---
@@ -74,8 +75,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
 
     addImports([
       { name: "useAuth", from: join(buildDir, "better-auth-utils/composables/useAuth") },
-      { name: "defineAuthConfig", from: resolve("./types") },
-      { name: "defineAuthClientConfig", from: resolve("./types") },
+      { name: "defineAuthClientConfig", from: resolve("./runtime/utils/define-config") },
     ])
 
     // --- SSR Plugin ---

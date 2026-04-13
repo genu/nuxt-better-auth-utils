@@ -5,11 +5,12 @@ import { customSession } from "better-auth/plugins"
 import { createAuthClient } from "better-auth/client"
 
 describe("defineAuthConfig", () => {
-  it("returns a plain config object as-is", () => {
+  it("wraps a plain config object in a function", () => {
     const config = { database: { provider: "sqlite" as const, url: ":memory:" } }
     const result = defineAuthConfig(config)
 
-    expect(result).toBe(config)
+    expect(typeof result).toBe("function")
+    expect(result()).toEqual(config)
   })
 
   it("returns a factory function as-is", () => {
@@ -20,12 +21,12 @@ describe("defineAuthConfig", () => {
     expect(typeof result).toBe("function")
   })
 
-  it("does not include secret in the config type", () => {
-    // This is a compile-time check — at runtime we just verify the helper
-    // doesn't modify the config. The Omit<BetterAuthOptions, "secret"> type
-    // ensures TypeScript rejects configs with `secret`.
-    const config = { database: { provider: "sqlite" as const, url: ":memory:" } }
-    expect(defineAuthConfig(config)).toEqual(config)
+  it("always returns a function regardless of input form", () => {
+    const fromObject = defineAuthConfig({ database: { provider: "sqlite" as const, url: ":memory:" } })
+    const fromFunction = defineAuthConfig(() => ({ database: { provider: "sqlite" as const, url: ":memory:" } }))
+
+    expect(typeof fromObject).toBe("function")
+    expect(typeof fromFunction).toBe("function")
   })
 
   it("preserves narrow plugin types for custom session inference", () => {
@@ -41,7 +42,7 @@ describe("defineAuthConfig", () => {
       ],
     })
 
-    type ResolvedConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig
+    type ResolvedConfig = ReturnType<typeof serverConfig>
     type AuthInstance = { options: ResolvedConfig & { secret: string } }
 
     const client = createAuthClient({
@@ -68,7 +69,7 @@ describe("defineAuthConfig", () => {
       ],
     }))
 
-    type ResolvedConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig
+    type ResolvedConfig = ReturnType<typeof serverConfig>
     type AuthInstance = { options: ResolvedConfig & { secret: string } }
 
     const client = createAuthClient({

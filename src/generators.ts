@@ -3,141 +3,94 @@
  * These produce the source code for auto-generated files (server utils, composables, middleware).
  */
 
-export function generateServerAuth(serverConfigAlias: string, hasServerConfig: boolean): string {
-  const imports = [
-    'import { betterAuth } from "better-auth"',
-    'import { useRuntimeConfig, createError } from "#imports"',
-  ]
-
-  if (hasServerConfig) {
-    imports.push(`import serverConfig from "${serverConfigAlias}"`)
-  }
+export function generateServerAuth(
+  serverConfigAlias: string,
+  hasServerConfig: boolean,
+): string {
+  const imports = hasServerConfig
+    ? [
+        'import { betterAuth } from "better-auth"',
+        'import type { H3Event } from "h3"',
+        'import { useRuntimeConfig, createError } from "#imports"',
+        `import serverConfig from "${serverConfigAlias}"`,
+      ].join("\n")
+    : [
+        'import { betterAuth } from "better-auth"',
+        'import type { H3Event } from "h3"',
+        'import { useRuntimeConfig, createError } from "#imports"',
+      ].join("\n");
 
   const createBody = hasServerConfig
     ? [
-        '  const resolved = typeof serverConfig === "function" ? serverConfig() : serverConfig',
+        "  const resolved = serverConfig()",
         "  return betterAuth({ ...resolved, secret })",
       ].join("\n")
-    : "  return betterAuth({ secret })"
+    : "  return betterAuth({ secret })";
 
-  return [
-    ...imports,
-    "",
-    "function createBetterAuthInstance() {",
-    '  const { secret } = useRuntimeConfig()',
-    "",
-    createBody,
-    "}",
-    "",
-    "let _instance = null",
-    "",
-    "function getInstance() {",
-    "  if (!_instance) _instance = createBetterAuthInstance()",
-    "  return _instance",
-    "}",
-    "",
-    "export function useServerAuth() {",
-    "  const requireSession = async (event) => {",
-    "    const session = await getInstance().api.getSession({ headers: event.headers })",
-    "",
-    "    if (!session) {",
-    "      throw createError({",
-    "        statusCode: 401,",
-    '        statusMessage: "Unauthorized",',
-    "      })",
-    "    }",
-    "",
-    "    return session",
-    "  }",
-    "",
-    "  const getSession = async (event) => {",
-    "    return await getInstance().api.getSession({ headers: event.headers })",
-    "  }",
-    "",
-    "  return {",
-    "    auth: getInstance(),",
-    "    requireSession,",
-    "    getSession,",
-    "  }",
-    "}",
-  ].join("\n")
+  return `${imports}
+
+function createInstance() {
+  const { secret } = useRuntimeConfig()
+
+${createBody}
 }
 
-export function generateServerAuthTypes(serverConfigAlias: string, hasServerConfig: boolean): string {
-  const authInstanceType = hasServerConfig
-    ? [
-        'import type { Auth, Session, User } from "better-auth"',
-        `import type serverConfig from "${serverConfigAlias}"`,
-        `type ResolvedServerConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig`,
-        `type AuthInstance = Auth<ResolvedServerConfig & { secret: string }>`,
-        `type Plugins = NonNullable<ResolvedServerConfig["plugins"]>`,
-        `type CustomSessionPlugin = Plugins extends (infer P)[] ? P extends { id: "custom-session"; $Infer: { Session: infer S } } ? S : never : never`,
-        `type SessionData = [CustomSessionPlugin] extends [never] ? { session: Session; user: User } : CustomSessionPlugin`,
-      ].join("\n")
-    : [
-        'import type { betterAuth } from "better-auth"',
-        "type AuthInstance = ReturnType<typeof betterAuth>",
-        "type SessionData = AuthInstance['$Infer']['Session']",
-      ].join("\n")
+let _instance: ReturnType<typeof createInstance> | null = null
 
-  return [
-    'import type { H3Event } from "h3"',
-    authInstanceType,
-    "",
-    'declare module "#better-auth-utils/server/auth" {',
-    "  export type { AuthInstance }",
-    "",
-    "  export function useServerAuth(): {",
-    "    auth: AuthInstance",
-    "    requireSession: (event: H3Event) => Promise<NonNullable<SessionData>>",
-    "    getSession: (event: H3Event) => Promise<SessionData | null>",
-    "  }",
-    "}",
-  ].join("\n")
+function getInstance() {
+  if (!_instance) _instance = createInstance()
+  return _instance
+}
+
+export function useServerAuth() {
+  const requireSession = async (event: H3Event) => {
+    const session = await getInstance().api.getSession({ headers: event.headers })
+
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Unauthorized",
+      })
+    }
+
+    return session
+  }
+
+  const getSession = async (event: H3Event) => {
+    return await getInstance().api.getSession({ headers: event.headers })
+  }
+
+  return {
+    auth: getInstance(),
+    requireSession,
+    getSession,
+  }
+}
+
+export type Auth = ReturnType<typeof createInstance>
+`;
 }
 
 export function generateUseAuth(
   clientConfigAlias: string,
   hasClientConfig: boolean,
-  serverConfigAlias: string,
-  hasServerConfig: boolean,
 ): string {
-  const configRef = hasClientConfig ? "clientConfig" : "{}"
-
-  const authInstanceType = hasServerConfig
-    ? [
-        `import type { Auth } from "better-auth"`,
-        `import type serverConfig from "${serverConfigAlias}"`,
-        `type ResolvedServerConfig = typeof serverConfig extends (...args: any[]) => infer R ? R : typeof serverConfig`,
-        `type AuthInstance = Auth<ResolvedServerConfig & { secret: string }>`,
-      ].join("\n")
-    : [
-        `import type { betterAuth } from "better-auth"`,
-        `type AuthInstance = ReturnType<typeof betterAuth>`,
-      ].join("\n")
+  const configRef = hasClientConfig ? "clientConfig" : "{}";
 
   return `import { createAuthClient } from "better-auth/client"
-import { customSessionClient } from "better-auth/client/plugins"
-${authInstanceType}
+import { defu } from "defu"
 ${hasClientConfig ? `import clientConfig from "${clientConfigAlias}"` : ""}
 
 export const useAuth = () => {
   const url = useRequestURL()
   const headers = useRequestHeaders()
 
-  const client = createAuthClient({
-    ...${configRef},
+  const client = createAuthClient(defu(${configRef}, {
     baseURL: url.origin,
     fetchOptions: {
-      headers: {
-        ...headers,
-      },
+      headers: { ...headers },
     },
-    plugins: [
-      customSessionClient<AuthInstance>(),
-      ...((${configRef}).plugins || []),
-    ],
-  })
+  }))
 
   type Session = (typeof client.$Infer.Session)["session"]
   type User = (typeof client.$Infer.Session)["user"]
@@ -209,7 +162,7 @@ export const useAuth = () => {
     signOut,
     client,
   }
-}`
+}`;
 }
 
 export function generateAuthMiddleware(redirectTo: string): string {
@@ -219,5 +172,6 @@ export function generateAuthMiddleware(redirectTo: string): string {
   if (!loggedIn.value) {
     return navigateTo("${redirectTo}")
   }
-})`
+})
+`;
 }

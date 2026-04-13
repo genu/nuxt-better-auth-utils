@@ -8,13 +8,12 @@ import {
   addPlugin,
   addRouteMiddleware,
   addComponent,
-  addTypeTemplate,
   createResolver,
 } from "@nuxt/kit"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type { BetterAuthModuleOptions } from "./types"
-import { generateServerAuth, generateServerAuthTypes, generateUseAuth, generateAuthMiddleware } from "./generators"
+import { generateServerAuth, generateUseAuth, generateAuthMiddleware } from "./generators"
 
 export default defineNuxtModule<BetterAuthModuleOptions>({
   meta: {
@@ -45,37 +44,39 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
       handler: resolve("./runtime/server/handler"),
     })
 
-    // --- Server: useServerAuth() utility (plain JS for Nitro/Rollup) ---
-    const serverAuthVirtualId = "#better-auth-utils/server/auth"
+    // --- Server: useServerAuth() utility ---
+    const serverAuthPath = join(buildDir, "better-auth-utils/server/auth")
+    const getServerAuthContents = () => generateServerAuth(serverConfigAlias, hasServerConfig)
 
-    addServerTemplate({
-      filename: serverAuthVirtualId,
-      getContents: () => generateServerAuth(serverConfigAlias, hasServerConfig),
+    // Write the actual .ts file to .nuxt/ for inspectability
+    addTemplate({
+      filename: "better-auth-utils/server/auth.ts",
+      write: true,
+      getContents: getServerAuthContents,
     })
 
-    addTypeTemplate(
-      {
-        filename: "better-auth-utils/server/auth.d.ts",
-        getContents: () => generateServerAuthTypes(serverConfigAlias, hasServerConfig),
-      },
-      { nitro: true },
-    )
-
-    nuxt.options.alias[serverAuthVirtualId] = join(buildDir, "better-auth-utils/server/auth.d.ts")
+    // Register as Nitro virtual module so server code can resolve it
+    addServerTemplate({
+      filename: "better-auth-utils/server/auth.ts",
+      getContents: getServerAuthContents,
+    })
 
     addServerImports([
-      { name: "useServerAuth", from: serverAuthVirtualId },
-      { name: "AuthInstance", type: true, from: serverAuthVirtualId },
+      { name: "useServerAuth", from: serverAuthPath },
+      { name: "defineAuthConfig", from: resolve("./runtime/utils/define-config") },
     ])
 
     // --- Client: useAuth() composable ---
     addTemplate({
       filename: "better-auth-utils/composables/useAuth.ts",
       write: true,
-      getContents: () => generateUseAuth(clientConfigAlias, hasClientConfig, serverConfigAlias, hasServerConfig),
+      getContents: () => generateUseAuth(clientConfigAlias, hasClientConfig),
     })
 
-    addImports([{ name: "useAuth", from: join(buildDir, "better-auth-utils/composables/useAuth") }])
+    addImports([
+      { name: "useAuth", from: join(buildDir, "better-auth-utils/composables/useAuth") },
+      { name: "defineAuthClientConfig", from: resolve("./runtime/utils/define-config") },
+    ])
 
     // --- SSR Plugin ---
     addPlugin({
@@ -122,7 +123,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
       filePath: resolve("./runtime/components/AuthTeamSwitcher.vue"),
     })
 
-    // --- Alias for user config imports ---
-    nuxt.options.alias["#better-auth-config"] = resolve("./runtime/types")
+    // --- Alias for user type imports ---
+    nuxt.options.alias["#nuxt-better-auth-utils"] = join(buildDir, "better-auth-utils/server/auth")
   },
 })

@@ -11,7 +11,6 @@ async function setupNuxt(
   return await loadNuxt({
     cwd: rootDir,
     overrides: {
-      _generate: false,
       ...overrides,
     },
     ready: true,
@@ -66,25 +65,23 @@ describe("module setup with defaults", () => {
     expect(plugin).toBeDefined()
   })
 
-  it("sets #better-auth-config alias to types", () => {
-    expect(nuxt.options.alias["#better-auth-config"]).toBeDefined()
-    expect(nuxt.options.alias["#better-auth-config"]).toContain("types")
+  it("sets #nuxt-better-auth-utils alias for type imports", () => {
+    expect(nuxt.options.alias["#nuxt-better-auth-utils"]).toBeDefined()
+    expect(nuxt.options.alias["#nuxt-better-auth-utils"]).toContain("better-auth-utils/server/auth")
   })
 
   it("generates useServerAuth server template without config import", () => {
-    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
 
     expect(content).toContain("export function useServerAuth()")
     expect(content).toContain("betterAuth({ secret })")
     expect(content).not.toContain("import serverConfig")
   })
 
-  it("generates useServerAuth as plain JavaScript", () => {
-    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
+  it("generates useServerAuth with Auth type export", () => {
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
 
-    expect(content).not.toContain("import type")
-    expect(content).not.toContain("export type")
-    expect(content).not.toContain(": H3Event")
+    expect(content).toContain("export type Auth = ReturnType<typeof createInstance>")
   })
 
   it("generates useAuth composable template without config import", () => {
@@ -92,7 +89,7 @@ describe("module setup with defaults", () => {
 
     expect(content).toContain("export const useAuth = ()")
     expect(content).toContain("createAuthClient")
-    expect(content).toContain("customSessionClient<AuthInstance>()")
+    expect(content).toContain('import { defu } from "defu"')
     expect(content).not.toContain("import clientConfig")
   })
 
@@ -128,13 +125,7 @@ describe("module setup with defaults", () => {
 
   it("registers server auth as a nitro virtual module", () => {
     const virtual = nuxt.options.nitro.virtual as Record<string, unknown>
-    expect(virtual?.["#better-auth-utils/server/auth"]).toBeDefined()
-  })
-
-  it("sets alias for server auth virtual module to resolve types", () => {
-    const alias = nuxt.options.alias["#better-auth-utils/server/auth"]
-    expect(alias).toBeDefined()
-    expect(alias).toContain("better-auth-utils/server/auth.d.ts")
+    expect(virtual?.["better-auth-utils/server/auth.ts"]).toBeDefined()
   })
 })
 
@@ -180,22 +171,22 @@ describe("module setup with config files", () => {
   }, 30_000)
 
   it("imports server config when auth.server.config.ts exists", () => {
-    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
 
     expect(content).toContain("import serverConfig")
     expect(content).toContain("betterAuth({ ...resolved, secret })")
   })
 
-  it("supports factory function pattern in generated server config", () => {
-    const content = getServerTemplateContent(nuxt, "#better-auth-utils/server/auth")
+  it("calls serverConfig as function in generated server config", () => {
+    const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
 
-    expect(content).toContain('typeof serverConfig === "function" ? serverConfig() : serverConfig')
+    expect(content).toContain("const resolved = serverConfig()")
   })
 
   it("imports client config when auth.client.config.ts exists", () => {
     const content = getTemplateContent(nuxt, "better-auth-utils/composables/useAuth.ts")
 
     expect(content).toContain("import clientConfig")
-    expect(content).toContain("...((clientConfig).plugins || [])")
+    expect(content).toContain("defu(clientConfig, {")
   })
 })

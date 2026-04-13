@@ -9,7 +9,7 @@ Nuxt module for [Better Auth](https://www.better-auth.com/) — full lifecycle i
 - `useAuth()` composable with reactive `session`, `user`, `loggedIn`, and raw `client` access
 - `useServerAuth()` server utility with `requireSession`, `getSession`, and raw `auth` instance
 - `auth` route middleware for protecting pages
-- `customSessionClient<AuthInstance>()` auto-injected for full session type inference
+- `Auth` type export via `#nuxt-better-auth-utils` for typed client plugins
 - Session signal listener for cross-tab sync
 - Built-in components: `AuthOnly`, `GuestOnly`, `AuthUserButton`, `AuthTeamSwitcher`
 - Zero opinions on database adapter, plugins, or auth strategy
@@ -39,7 +39,6 @@ Place this file in the `server/` directory so that server auto-imports (e.g. `us
 Standard Better Auth options. The module auto-injects `secret`.
 
 ```ts
-import { defineAuthConfig } from '#better-auth-config'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
 
@@ -63,10 +62,11 @@ export default defineAuthConfig(() => {
 
 ### Client Config — `app/auth.client.config.ts`
 
-Place this file in the `app/` directory so that client auto-imports (e.g. `useRuntimeConfig()`) are available.
+Place this file in the `app/` directory so that client auto-imports are available.
+
+The client config is deep-merged with the module's defaults (using `defu`), so your options take priority while SSR headers and `baseURL` are filled in automatically.
 
 ```ts
-import { defineAuthClientConfig } from '#better-auth-config'
 import { organizationClient } from 'better-auth/client/plugins'
 
 export default defineAuthClientConfig({
@@ -145,35 +145,38 @@ definePageMeta({
 })
 ```
 
-### Custom Session
+### Using the `Auth` Type
 
-Use Better Auth's `customSession` plugin with the `satisfies` pattern for full type inference:
+The module exports the server auth instance type via `#nuxt-better-auth-utils`. This is useful for any client plugin that needs the server type, such as `customSessionClient`:
+
+#### Server — `server/auth.server.config.ts`
 
 ```ts
-import { defineAuthConfig } from '#better-auth-config'
-import type { BetterAuthOptions } from 'better-auth'
-import { customSession, organization } from 'better-auth/plugins'
+import { customSession } from 'better-auth/plugins'
 
-export default defineAuthConfig(() => {
-  const baseOptions = {
-    database: myAdapter(),
-    plugins: [organization()],
-  } satisfies BetterAuthOptions
-
-  return {
-    ...baseOptions,
-    plugins: [
-      ...baseOptions.plugins,
-      customSession(async ({ user, session }) => {
-        // session.activeOrganizationId is typed correctly
-        return { user, session: { ...session, extra: 'data' } }
-      }, baseOptions),
-    ],
-  }
+export default defineAuthConfig({
+  database: myAdapter(),
+  plugins: [
+    customSession(async ({ user, session }) => {
+      return {
+        user,
+        session: { ...session, activeOrganization: 'acme' },
+      }
+    }),
+  ],
 })
 ```
 
-The module auto-injects `customSessionClient<AuthInstance>()` on the client, so `useAuth().session` is fully typed with your custom session fields.
+#### Client — `app/auth.client.config.ts`
+
+```ts
+import { customSessionClient } from 'better-auth/client/plugins'
+import type { Auth } from '#nuxt-better-auth-utils'
+
+export default defineAuthClientConfig({
+  plugins: [customSessionClient<Auth>()],
+})
+```
 
 ## License
 

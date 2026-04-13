@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.25](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.24...v0.1.25) (2026-04-13)
+
+
+### Bug Fixes
+
+* Refactor the way autoimports are registered ([#77](https://github.com/genu/nuxt-better-auth-utils/issues/77)) ([625eee3](https://github.com/genu/nuxt-better-auth-utils/commit/625eee366c7ab8017e621fabd9949c4bb26e3b19))
+
 ## [0.1.24](https://github.com/genu/nuxt-better-auth-utils/compare/v0.1.23...v0.1.24) (2026-04-12)
 
 

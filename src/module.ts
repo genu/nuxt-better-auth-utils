@@ -53,7 +53,7 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
     // path matching what addServerImports resolves to, so Nitro's rollup
     // virtual plugin can match the import.
     addServerTemplate({
-      filename: `${serverAuthPath}.ts`,
+      filename: serverAuthPath,
       getContents: getServerAuthContents,
     })
 

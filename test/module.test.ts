@@ -78,10 +78,11 @@ describe("module setup with defaults", () => {
     expect(content).not.toContain("import serverConfig")
   })
 
-  it("generates useServerAuth with Auth type export", () => {
+  it("generates server auth without TypeScript syntax", () => {
     const content = getServerTemplateContent(nuxt, "better-auth-utils/server/auth.ts")
 
-    expect(content).toContain("export type Auth = ReturnType<typeof createInstance>")
+    expect(content).not.toContain("import type")
+    expect(content).not.toContain("export type")
   })
 
   it("generates useAuth composable template without config import", () => {
@@ -121,6 +122,7 @@ describe("module setup with defaults", () => {
 
     expect(templates).toContain("better-auth-utils/composables/useAuth.ts")
     expect(templates).toContain("better-auth-utils/middleware/auth.ts")
+    expect(templates).toContain("better-auth-utils/server/auth.d.ts")
   })
 
   it("registers server auth as a nitro virtual module", () => {

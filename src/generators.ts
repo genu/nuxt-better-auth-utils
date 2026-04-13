@@ -10,13 +10,11 @@ export function generateServerAuth(
   const imports = hasServerConfig
     ? [
         'import { betterAuth } from "better-auth"',
-        'import type { H3Event } from "h3"',
         'import { useRuntimeConfig, createError } from "#imports"',
         `import serverConfig from "${serverConfigAlias}"`,
       ].join("\n")
     : [
         'import { betterAuth } from "better-auth"',
-        'import type { H3Event } from "h3"',
         'import { useRuntimeConfig, createError } from "#imports"',
       ].join("\n");
 
@@ -35,7 +33,7 @@ function createInstance() {
 ${createBody}
 }
 
-let _instance: ReturnType<typeof createInstance> | null = null
+let _instance = null
 
 function getInstance() {
   if (!_instance) _instance = createInstance()
@@ -43,7 +41,7 @@ function getInstance() {
 }
 
 export function useServerAuth() {
-  const requireSession = async (event: H3Event) => {
+  const requireSession = async (event) => {
     const session = await getInstance().api.getSession({ headers: event.headers })
 
     if (!session) {
@@ -56,7 +54,7 @@ export function useServerAuth() {
     return session
   }
 
-  const getSession = async (event: H3Event) => {
+  const getSession = async (event) => {
     return await getInstance().api.getSession({ headers: event.headers })
   }
 
@@ -67,7 +65,35 @@ export function useServerAuth() {
   }
 }
 
-export type Auth = ReturnType<typeof createInstance>
+`;
+}
+
+export function generateServerAuthTypes(
+  serverConfigAlias: string,
+  hasServerConfig: boolean,
+): string {
+  const authType = hasServerConfig
+    ? [
+        'import type { Auth as BetterAuth } from "better-auth"',
+        `import type serverConfig from "${serverConfigAlias}"`,
+        "type ServerConfig = ReturnType<typeof serverConfig>",
+        "type AuthInstance = BetterAuth<ServerConfig & { secret: string }>",
+      ].join("\n")
+    : [
+        'import type { betterAuth } from "better-auth"',
+        "type AuthInstance = ReturnType<typeof betterAuth>",
+      ].join("\n")
+
+  return `import type { H3Event } from "h3"
+${authType}
+
+export type Auth = AuthInstance
+
+export function useServerAuth(): {
+  auth: AuthInstance
+  requireSession: (event: H3Event) => Promise<NonNullable<AuthInstance["$Infer"]["Session"]>>
+  getSession: (event: H3Event) => Promise<AuthInstance["$Infer"]["Session"] | null>
+}
 `;
 }
 

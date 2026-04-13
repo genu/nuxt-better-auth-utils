@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { generateServerAuth, generateUseAuth, generateAuthMiddleware } from "../src/generators"
+import { generateServerAuth, generateServerAuthTypes, generateUseAuth, generateAuthMiddleware } from "../src/generators"
 
 describe("generateServerAuth", () => {
   it("generates minimal config when no server config exists", () => {
@@ -63,16 +63,42 @@ describe("generateServerAuth", () => {
     expect(result).toContain('import { useRuntimeConfig, createError } from "#imports"')
   })
 
-  it("exports Auth type derived from the instance", () => {
-    const result = generateServerAuth("~~/auth.server.config", false)
-
-    expect(result).toContain("export type Auth = ReturnType<typeof createInstance>")
-  })
-
-  it("exports Auth type when server config exists", () => {
+  it("does not contain TypeScript syntax", () => {
     const result = generateServerAuth("~~/auth.server.config", true)
 
-    expect(result).toContain("export type Auth = ReturnType<typeof createInstance>")
+    expect(result).not.toContain("import type")
+    expect(result).not.toContain("export type")
+    expect(result).not.toContain(": H3Event")
+    expect(result).not.toContain(": ReturnType")
+  })
+})
+
+describe("generateServerAuthTypes", () => {
+  it("generates type declarations without server config", () => {
+    const result = generateServerAuthTypes("~~/auth.server.config", false)
+
+    expect(result).toContain('import type { H3Event } from "h3"')
+    expect(result).toContain('import type { betterAuth } from "better-auth"')
+    expect(result).toContain("type AuthInstance = ReturnType<typeof betterAuth>")
+    expect(result).toContain("export type Auth = AuthInstance")
+    expect(result).toContain("export function useServerAuth()")
+  })
+
+  it("generates type declarations with server config", () => {
+    const result = generateServerAuthTypes("~~/auth.server.config", true)
+
+    expect(result).toContain('import type { Auth as BetterAuth } from "better-auth"')
+    expect(result).toContain('import type serverConfig from "~~/auth.server.config"')
+    expect(result).toContain("type ServerConfig = ReturnType<typeof serverConfig>")
+    expect(result).toContain("type AuthInstance = BetterAuth<ServerConfig & { secret: string }>")
+    expect(result).toContain("export type Auth = AuthInstance")
+  })
+
+  it("declares useServerAuth return type with requireSession and getSession", () => {
+    const result = generateServerAuthTypes("~~/auth.server.config", false)
+
+    expect(result).toContain("requireSession: (event: H3Event)")
+    expect(result).toContain("getSession: (event: H3Event)")
   })
 })
 

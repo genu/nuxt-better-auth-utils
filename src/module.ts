@@ -3,6 +3,7 @@ import {
   addServerHandler,
   addServerTemplate,
   addTemplate,
+  addTypeTemplate,
   addImports,
   addServerImports,
   addPlugin,
@@ -13,7 +14,7 @@ import {
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type { BetterAuthModuleOptions } from "./types"
-import { generateServerAuth, generateUseAuth, generateAuthMiddleware } from "./generators"
+import { generateServerAuth, generateServerAuthTypes, generateUseAuth, generateAuthMiddleware } from "./generators"
 
 export default defineNuxtModule<BetterAuthModuleOptions>({
   meta: {
@@ -44,22 +45,26 @@ export default defineNuxtModule<BetterAuthModuleOptions>({
       handler: resolve("./runtime/server/handler"),
     })
 
-    // --- Server: useServerAuth() utility ---
+    // --- Server: useServerAuth() utility (plain JS for Nitro/Rollup) ---
     const serverAuthPath = join(buildDir, "better-auth-utils/server/auth")
     const getServerAuthContents = () => generateServerAuth(serverConfigAlias, hasServerConfig)
 
-    // Write the actual .ts file to .nuxt/ for inspectability
-    addTemplate({
-      filename: "better-auth-utils/server/auth.ts",
-      write: true,
+    // Register as Nitro virtual module. The filename must be the absolute
+    // path matching what addServerImports resolves to, so Nitro's rollup
+    // virtual plugin can match the import.
+    addServerTemplate({
+      filename: `${serverAuthPath}.ts`,
       getContents: getServerAuthContents,
     })
 
-    // Register as Nitro virtual module so server code can resolve it
-    addServerTemplate({
-      filename: "better-auth-utils/server/auth.ts",
-      getContents: getServerAuthContents,
-    })
+    // Type declarations (separate .d.ts so Rollup never sees TS syntax)
+    addTypeTemplate(
+      {
+        filename: "better-auth-utils/server/auth.d.ts",
+        getContents: () => generateServerAuthTypes(serverConfigAlias, hasServerConfig),
+      },
+      { nitro: true },
+    )
 
     addServerImports([
       { name: "useServerAuth", from: serverAuthPath },

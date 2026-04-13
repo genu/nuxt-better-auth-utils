@@ -1,7 +1,6 @@
-<script setup lang="ts">
-import { useAuth } from "#imports"
-
-const { user, session, signOut, ready, loggedIn } = useAuth()
+<script setup>
+import { useAuth } from "#imports";
+const { user, session, signOut, ready, loggedIn } = useAuth();
 </script>
 
 <template>

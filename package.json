@@ -46,7 +46,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@nuxt/kit": "4.4.2",
+    "@nuxt/kit": "4.4.6",
     "defu": "6.1.7"
   },
   "peerDependencies": {
@@ -54,11 +54,11 @@
   },
   "devDependencies": {
     "@nuxt/module-builder": "1.0.2",
-    "@nuxt/schema": "4.4.2",
+    "@nuxt/schema": "4.4.6",
     "@nuxt/test-utils": "4.0.3",
     "better-auth": "1.6.11",
     "happy-dom": "20.9.0",
-    "nuxt": "4.4.2",
+    "nuxt": "4.4.6",
     "typescript": "6.0.3",
     "vitest": "4.1.7",
     "vue-tsc": "3.3.1"

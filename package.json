@@ -60,7 +60,7 @@
     "happy-dom": "20.9.0",
     "nuxt": "4.4.2",
     "typescript": "6.0.3",
-    "vitest": "4.1.7",
+    "vitest": "4.1.8",
     "vue-tsc": "3.3.3"
   }
 }

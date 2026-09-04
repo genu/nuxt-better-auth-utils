@@ -59,7 +59,7 @@
     "better-auth": "1.7.2",
     "happy-dom": "20.14.0",
     "nuxt": "4.4.2",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vitest": "4.1.11",
     "vue-tsc": "3.3.11"
   }

@@ -57,7 +57,7 @@
     "@nuxt/schema": "4.4.2",
     "@nuxt/test-utils": "4.0.3",
     "better-auth": "1.7.14",
-    "happy-dom": "20.14.6",
+    "happy-dom": "21.0.4",
     "nuxt": "4.4.2",
     "typescript": "6.0.3",
     "vitest": "4.1.12",
